@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "bun build ./app/page.tsx --outdir ./out",
+    "build": "bun build ./app/index.tsx --outdir ./out",
     "start": "next start",
     "lint": "next lint"
   },
