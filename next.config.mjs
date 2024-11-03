@@ -8,7 +8,7 @@ const nextConfig = {
       }
     ]
   },
-  output: 'standalone'
+  output: 'export'
   // output: 'standalone' // for docker deployment
 };
 
