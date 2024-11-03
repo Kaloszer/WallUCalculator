@@ -34,10 +34,13 @@ jobs:
         env:
           GITHUB_PAGES: true
 
+      - name: See what folders are in root
+        run: ls -d */
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: out
 
   deploy:
     environment:
