@@ -1,18 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   basePath: '/WallUCalculator',
-  experimental: {
-    images: {
-      unoptimized: true,
-      remotePatterns: [
-        {
-          protocol: "https",
-          hostname: "ui.shadcn.com"
-        }
-      ]
-    }
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "ui.shadcn.com"
+      }
+    ]
   },
-  output: 'export'
+  output: 'export',
+  reactStrictMode: true,
   // output: 'standalone' // for docker deployment
 };
 
