@@ -24,18 +24,15 @@ jobs:
       - name: Setup Node.js
         uses: ./.github/actions/setup-node
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
       - name: Setup Pages
         uses: actions/configure-pages@v4
         with:
           static_site_generator: next
 
-      - name: Build with Bun
-        run: bun build ./index.tsx --outdir ./out
+      - name: Build with Next.js
+        run: bun run build
+        env:
+          GITHUB_PAGES: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -51,6 +48,6 @@ jobs:
     needs: build
 
     steps:
-      - name: Publish to GitHub Pages 🚀
+      - name: Deploy to GitHub Pages 🚀
         id: deployment
         uses: actions/deploy-pages@v4
