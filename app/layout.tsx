@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Bun.sh + shadcn + Next.js",
-  description: "Template app"
+  title: "Wall U-Value Calculator",
+  description: "Calculate wall U-values"
 };
 
 export default function RootLayout({

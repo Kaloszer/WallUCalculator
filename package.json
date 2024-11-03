@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "bun build ./app/index.tsx --outdir ./out",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -37,6 +37,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "bun-plugin-html": "^2.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.16",
     "postcss": "^8",

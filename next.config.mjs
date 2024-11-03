@@ -1,9 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  distDir: 'out',
-  basePath: process.env.GITHUB_PAGES ? '/WallUCalculator' : '',
-  // This is important for GitHub Pages deployment
+  basePath: '/WallUCalculator',
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -12,7 +9,9 @@ const nextConfig = {
         hostname: "ui.shadcn.com"
       }
     ]
-  }
+  },
+  output: 'export'
+  // output: 'standalone' // for docker deployment
 };
 
 export default nextConfig;

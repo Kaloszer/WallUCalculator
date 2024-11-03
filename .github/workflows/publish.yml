@@ -30,7 +30,7 @@ jobs:
           static_site_generator: next
 
       - name: Build with Next.js/Bun
-        run: bun build ./app/index.tsx --outdir ./out
+        run: bun run build
         env:
           GITHUB_PAGES: true
 
