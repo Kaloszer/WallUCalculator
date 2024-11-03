@@ -2,12 +2,7 @@
 const nextConfig = {
   basePath: '/WallUCalculator',
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "ui.shadcn.com"
-      }
-    ]
+    unoptimized: true,
   },
   output: 'export',
   reactStrictMode: true,
