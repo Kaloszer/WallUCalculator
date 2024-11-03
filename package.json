@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "rm -rf out && next build",
+    "build": "bun build ./app/page.tsx --outdir ./out",
     "start": "next start",
     "lint": "next lint"
   },

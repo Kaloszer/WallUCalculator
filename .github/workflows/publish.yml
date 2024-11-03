@@ -29,18 +29,15 @@ jobs:
         with:
           static_site_generator: next
 
-      - name: Build with Next.js
-        run: bun run build
+      - name: Build with Next.js/Bun
+        run: bun build
         env:
           GITHUB_PAGES: true
-
-      - name: Verbose folder structure
-        run: ls -R
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: out
+          path: ./out
 
   deploy:
     environment:
