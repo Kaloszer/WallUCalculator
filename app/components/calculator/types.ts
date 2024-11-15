@@ -8,9 +8,11 @@ export interface WallComponent {
   vaporResistance?: number;  // vapor resistance factor (μ)
 }
 
+export type MaterialProperty = number | string;
+
 export interface Material {
   name: string
-  conductivity: number
+  conductivity: MaterialProperty
   color: string
   cost: number // Cost per m² per mm thickness
   isInsulation: boolean
@@ -130,6 +132,6 @@ export const calculateUValue = (rValue: number) => {
   return rValue > 0 ? 1 / rValue : 0;
 };
 
-export const logger = (component: string, action: string, data?: any) => {
+export const logger = (component: string, action: string, data?: MaterialProperty) => {
   console.log(`[${component}] ${action}`, data ? data : '');
 };

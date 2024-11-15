@@ -51,6 +51,8 @@ export default function Calculator() {
   const [temperature, setTemperature] = useState(20);
   const [humidity, setHumidity] = useState(50);
   const [outsideTemp, setOutsideTemp] = useState(5);
+  const [insideRH, setInsideRH] = useState(humidity); 
+  const [outsideRH, setOutsideRH] = useState(80);
   const dewPointCalculator = new DewPointCalculator();
 
   const dewPoint = dewPointCalculator.calculateDewPoint(temperature, humidity);
@@ -136,6 +138,8 @@ export default function Calculator() {
           insideTemp={temperature}
           outsideTemp={outsideTemp}
           dewPoint={dewPoint}
+          insideRH={insideRH}
+          outsideRH={outsideRH}
         />
       </div>
     </div>
