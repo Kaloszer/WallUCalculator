@@ -37,7 +37,7 @@ export function DewPointDisplay({
                     <Alert>
                         <InfoIcon className="h-4 w-4" />
                         <AlertDescription>
-                            Note: You're analyzing a {tempDiff.toFixed(1)}°C temperature difference 
+                            Note: You are analyzing a {tempDiff.toFixed(1)}°C temperature difference 
                             with {humidity}% RH. High indoor humidity with large temperature 
                             differences may require special consideration in the wall assembly 
                             to manage moisture effectively.

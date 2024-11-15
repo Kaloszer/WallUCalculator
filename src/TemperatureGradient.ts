@@ -39,7 +39,7 @@ export class TemperatureGradient {
         );
 
         // Calculate actual vapor pressures considering material resistance
-        let totalResistance = components.reduce((sum, comp) => 
+        const totalResistance = components.reduce((sum, comp) => 
             sum + ((comp.vaporResistance || 1) * comp.thickness / 1000), 0);
         
         const pInside = saturationPressures[0] * (insideRH / 100);
