@@ -5,6 +5,7 @@ export interface WallComponent {
   conductivity: number
   isInsulation: boolean
   hasStuds?: boolean
+  vaporResistance?: number;  // vapor resistance factor (μ)
 }
 
 export interface Material {
@@ -13,6 +14,7 @@ export interface Material {
   color: string
   cost: number // Cost per m² per mm thickness
   isInsulation: boolean
+  vaporResistance: number  // μ-value (vapor resistance factor)
 }
 
 export type StudWallType = 'none' | 'standard' | 'i-joist';
@@ -56,19 +58,19 @@ export const studWallConfigs: Record<StudWallType, StudWallConfig> = {
 };
 
 export const commonMaterials: Material[] = [
-  { name: "Brick", conductivity: 1.7, color: "#BC4A3C", cost: 0.55, isInsulation: false },
-  { name: "Concrete", conductivity: 1.7, color: "#C4B6A6", cost: 150.0, isInsulation: false },
-  { name: "Gypsum Board", conductivity: 0.2, color: "#EEEDE4", cost: 2.5, isInsulation: false },
-  { name: "Mineral Wool λ0.036", conductivity: 0.036, color: "#D3D3D3", cost: 0.5, isInsulation: true },
-  { name: "Mineral Wool λ0.034", conductivity: 0.034, color: "#D3D3F3", cost: 1.0, isInsulation: true },
-  { name: "Insulation Foam", conductivity: 0.039, color: "#d0eae8", cost: 2.25, isInsulation: true },
-  { name: "Plywood", conductivity: 0.3, color: "#EED5AE", cost: 35.55, isInsulation: false },
-  { name: "OSB", conductivity: 0.13, color: "#DAA520", cost: 36.14, isInsulation: false },
-  { name: "Service Space", conductivity: 0.036, color: "#E8E8E8", cost: 0.5, isInsulation: true },
-  { name: "Windbreak", conductivity: 0.2, color: "#87CEEB", cost: 5.0, isInsulation: false },
-  { name: "Vapour Barrier", conductivity: 0.4, color: "#87CEEB", cost: 3.0, isInsulation: false },
-  { name: "Plaster", conductivity: 0.5, color: "#f8f8ff", cost: 5.0, isInsulation: false },
-]
+  { name: "Brick", conductivity: 1.7, color: "#BC4A3C", cost: 0.55, isInsulation: false, vaporResistance: 10 },
+  { name: "Concrete", conductivity: 1.7, color: "#C4B6A6", cost: 150.0, isInsulation: false, vaporResistance: 100 },
+  { name: "Gypsum Board", conductivity: 0.2, color: "#EEEDE4", cost: 2.5, isInsulation: false, vaporResistance: 8 },
+  { name: "Mineral Wool λ0.036", conductivity: 0.036, color: "#D3D3D3", cost: 0.5, isInsulation: true, vaporResistance: 1 },
+  { name: "Mineral Wool λ0.034", conductivity: 0.034, color: "#D3D3F3", cost: 1.0, isInsulation: true, vaporResistance: 1 },
+  { name: "Insulation Foam", conductivity: 0.039, color: "#d0eae8", cost: 2.25, isInsulation: true, vaporResistance: 50 },
+  { name: "Plywood", conductivity: 0.3, color: "#EED5AE", cost: 35.55, isInsulation: false, vaporResistance: 200 },
+  { name: "OSB", conductivity: 0.13, color: "#DAA520", cost: 36.14, isInsulation: false, vaporResistance: 150 },
+  { name: "Service Space", conductivity: 0.036, color: "#E8E8E8", cost: 0.5, isInsulation: true, vaporResistance: 1 },
+  { name: "Windbreak", conductivity: 0.2, color: "#87CEEB", cost: 5.0, isInsulation: false, vaporResistance: 100 },
+  { name: "Vapour Barrier", conductivity: 0.4, color: "#87CEEB", cost: 3.0, isInsulation: false, vaporResistance: 100000 },
+  { name: "Plaster", conductivity: 0.5, color: "#f8f8ff", cost: 5.0, isInsulation: false, vaporResistance: 10 }
+];
 
 export const MAX_LAYERS = 8;
 

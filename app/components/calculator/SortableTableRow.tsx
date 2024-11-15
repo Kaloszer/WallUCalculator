@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table"
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Trash2, GripVertical } from "lucide-react"
-import { WallComponent, commonMaterials } from "./types"
+import { WallComponent, commonMaterials, calculateRValue } from "./types"
 import { Checkbox } from "@/components/ui/checkbox"
 
 interface SortableTableRowProps {
@@ -13,7 +13,6 @@ interface SortableTableRowProps {
   index: number;
   removeComponent: (id: number) => void;
   updateComponent: (id: number, updates: Partial<WallComponent>) => void;
-  calculateRValue: (component: WallComponent) => number;
   toggleStuds: (id: number) => void;
   showStuds: boolean;
 }
@@ -23,7 +22,6 @@ export function SortableTableRow({
   index, 
   removeComponent, 
   updateComponent,
-  calculateRValue,
   toggleStuds,
   showStuds
 }: SortableTableRowProps) {

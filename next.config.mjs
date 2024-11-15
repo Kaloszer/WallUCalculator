@@ -10,9 +10,8 @@ const nextConfig = {
     ]
   },
   output: 'export',
-  // Add basePath if deploying to a subdirectory
-  basePath: '/WallUCalculator',
-  // This ensures proper static export
+  // Only apply basePath in production
+  basePath: process.env.NODE_ENV === 'production' ? '/WallUCalculator' : '',
   trailingSlash: true
 };
 
