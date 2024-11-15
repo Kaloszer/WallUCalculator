@@ -67,10 +67,11 @@ export function SortableTableRow({
           value={component.material}
           onValueChange={(value) => {
             const selectedMaterial = commonMaterials.find(m => m.name === value)
+            const conductivity = selectedMaterial?.conductivity
             updateComponent(component.id, {
               material: value,
-              conductivity: selectedMaterial ? selectedMaterial.conductivity : 0,
-              isInsulation: selectedMaterial ? selectedMaterial.isInsulation : false, // Set isInsulation
+              conductivity: typeof conductivity === 'number' ? conductivity : 0,
+              isInsulation: selectedMaterial ? selectedMaterial.isInsulation : false,
             })
           }}
         >
