@@ -1,3 +1,5 @@
+"use client";
+import { useState, useEffect } from "react";
 import { WallComponent } from "../types";
 import { Line } from "react-chartjs-2";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -14,7 +16,6 @@ import {
     Legend
 } from 'chart.js';
 
-// Register ChartJS components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -34,6 +35,24 @@ interface Props {
     outsideRH: number;
 }
 
+interface ChartData {
+    data: {
+        labels: string[];
+        datasets: {
+            label: string;
+            data: number[];
+            borderColor: string;
+            tension?: number;
+            yAxisID: string;
+            borderDash?: number[];
+        }[];
+    };
+    hasRisk: boolean;
+    riskLayers: number[];
+    vaporPressureRisk: boolean;
+    saturationPoints: number[];
+}
+
 export function TemperatureGradientDisplay({
     components,
     insideTemp,
@@ -42,65 +61,102 @@ export function TemperatureGradientDisplay({
     insideRH,
     outsideRH
 }: Props) {
-    const temperatureGradient = new TemperatureGradient();
-    const temperatures = temperatureGradient.calculateTemperatures(
-        components,
-        insideTemp,
-        outsideTemp
-    );
+    const [chartData, setChartData] = useState<ChartData | null>(null);
 
-    const vaporPressures = temperatureGradient.calculateVaporPressureGradient(
-        components,
-        insideTemp,
-        outsideTemp,
-        insideRH,
-        outsideRH
-    );
+    useEffect(() => {
+        const temperatureGradient = new TemperatureGradient();
+        const temperatures = temperatureGradient.calculateTemperatures(
+            components,
+            insideTemp,
+            outsideTemp
+        );
 
-    const { hasRisk, riskLayers, vaporPressureRisk, saturationPoints } = 
-        temperatureGradient.checkCondensationRisk(temperatures, dewPoint, components);
+        const vaporPressures = temperatureGradient.calculateVaporPressureGradient(
+            components,
+            insideTemp,
+            outsideTemp,
+            insideRH,
+            outsideRH
+        );
 
-    // Enhanced chart configuration with vapor pressure
-    const data = {
-        labels: ['Interior', ...components.map(c => c.material)],
-        datasets: [
-            {
-                label: 'Temperature',
-                data: temperatures,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1,
-                yAxisID: 'y'
-            },
-            {
-                label: 'Dew Point',
-                data: Array(temperatures.length).fill(dewPoint),
-                borderColor: 'rgb(255, 99, 132)',
-                borderDash: [5, 5],
-                yAxisID: 'y'
-            },
-            {
-                label: 'Vapor Pressure',
-                data: vaporPressures,
-                borderColor: 'rgb(153, 102, 255)',
-                tension: 0.1,
-                yAxisID: 'y1'
-            }
-        ]
-    };
+        const { hasRisk, riskLayers, vaporPressureRisk, saturationPoints } =
+            temperatureGradient.checkCondensationRisk(temperatures, dewPoint, components);
 
-    const options = {
+        // Create dewPoint line data
+        const dewPointLine = new Array(temperatures.length).fill(dewPoint);
+
+        const data = {
+            labels: ['Interior', ...components.map(c => c.material)],
+            datasets: [
+                {
+                    label: 'Temperature',
+                    data: temperatures,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Vapor Pressure',
+                    data: vaporPressures,
+                    borderColor: 'rgb(153, 102, 255)',
+                    tension: 0.1,
+                    yAxisID: 'y1'
+                },
+                {
+                    label: 'Dew Point',
+                    data: dewPointLine,
+                    borderColor: 'rgb(255, 99, 132)',
+                    borderDash: [5, 5],
+                    tension: 0,
+                    yAxisID: 'y'
+                }
+            ]
+        };
+
+        setChartData({
+            data,
+            hasRisk,
+            riskLayers,
+            vaporPressureRisk,
+            saturationPoints
+        });
+    }, [components, insideTemp, outsideTemp, dewPoint, insideRH, outsideRH]);
+
+    const options: {
         scales: {
             y: {
-                type: 'linear' as const,
-                position: 'left' as const,
+                type: 'linear';
+                position: 'left';
+                title: {
+                    display: boolean;
+                    text: string;
+                };
+            };
+            y1: {
+                type: 'linear';
+                position: 'right';
+                title: {
+                    display: boolean;
+                    text: string;
+                };
+                grid: {
+                    drawOnChartArea: boolean;
+                };
+            };
+        };
+    } = {
+        scales: {
+            y: {
+                type: 'linear',
+                position: 'left',
                 title: {
                     display: true,
                     text: 'Temperature (°C)'
                 }
             },
             y1: {
-                type: 'linear' as const,
-                position: 'right' as const,
+                type: 'linear',
+                position: 'right',
                 title: {
                     display: true,
                     text: 'Vapor Pressure (Pa)'
@@ -112,28 +168,32 @@ export function TemperatureGradientDisplay({
         }
     };
 
+    if (!chartData) {
+        return <div>Loading...</div>;
+    }
+
     return (
         <div className="mt-4">
             <h3 className="text-lg font-semibold mb-2">Temperature and Vapor Pressure Gradients</h3>
             <div className="h-[300px]">
-                <Line data={data} options={options} />
+                <Line data={chartData.data} options={options} />
             </div>
 
-            {(hasRisk || vaporPressureRisk) && (
+            {(chartData.hasRisk || chartData.vaporPressureRisk) && (
                 <Alert variant="destructive" className="mt-4">
                     <AlertTitle>Condensation Risk Analysis</AlertTitle>
                     <AlertDescription>
-                        {hasRisk && (
+                        {chartData.hasRisk && (
                             <div>
-                                Temperature-based risk in layers: {riskLayers.map(i =>
-                                    components[i]?.material || 'Interface'
+                                Temperature-based risk in layers: {chartData.riskLayers.map(i =>
+                                    components[i]?.material ?? "Unknown"
                                 ).join(', ')}
                             </div>
                         )}
-                        {vaporPressureRisk && (
+                        {chartData.vaporPressureRisk && (
                             <div>
-                                Vapor pressure exceeds saturation in layers: {saturationPoints.map(i =>
-                                    components[i]?.material || 'Interface'
+                                Vapor pressure exceeds saturation in layers: {chartData.saturationPoints.map(i =>
+                                    components[i]?.material ?? "Unknown"
                                 ).join(', ')}
                             </div>
                         )}

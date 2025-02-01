@@ -51,7 +51,7 @@ export default function Calculator() {
   const [temperature, setTemperature] = useState(20);
   const [humidity, setHumidity] = useState(50);
   const [outsideTemp, setOutsideTemp] = useState(5);
-  const [insideRH, setInsideRH] = useState(humidity); 
+  const [insideRH, setInsideRH] = useState(humidity);
   const [outsideRH, setOutsideRH] = useState(80);
   const dewPointCalculator = new DewPointCalculator();
 
@@ -88,6 +88,7 @@ export default function Calculator() {
               <TableHead>Material</TableHead>
               <TableHead>Thickness (mm)</TableHead>
               <TableHead>R-Value (m²K/W)</TableHead>
+              <TableHead>λ-Value (W/mK)</TableHead>
               {studWallType !== 'none' && (
                 <TableHead>Stud Insulation</TableHead>
               )}
@@ -119,6 +120,9 @@ export default function Calculator() {
         <WallVisualization3D
           components={components}
           studWallConfig={getStudConfig()}
+          insideTemp={temperature}
+          outsideTemp={outsideTemp}
+          dewPoint={dewPoint}
         />
       </div>
 
@@ -132,7 +136,7 @@ export default function Calculator() {
           onHumidityChange={setHumidity}
           onOutsideTempChange={setOutsideTemp}
         />
-        
+
         <TemperatureGradientDisplay
           components={components}
           insideTemp={temperature}

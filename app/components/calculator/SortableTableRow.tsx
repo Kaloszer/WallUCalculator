@@ -17,10 +17,10 @@ interface SortableTableRowProps {
   showStuds: boolean;
 }
 
-export function SortableTableRow({ 
-  component, 
-  index, 
-  removeComponent, 
+export function SortableTableRow({
+  component,
+  index,
+  removeComponent,
   updateComponent,
   toggleStuds,
   showStuds
@@ -37,6 +37,9 @@ export function SortableTableRow({
     transform: CSS.Transform.toString(transform),
     transition,
   };
+
+  const rValue = calculateRValue(component);
+  const uValue = rValue > 0 ? 1 / rValue : 0;
 
   return (
     <TableRow ref={setNodeRef} style={style}>
@@ -97,6 +100,7 @@ export function SortableTableRow({
         />
       </TableCell>
       <TableCell>{calculateRValue(component).toFixed(3)}</TableCell>
+      <TableCell>{component.conductivity.toFixed(3)}</TableCell>
       {showStuds && (
         <TableCell>
           <Checkbox

@@ -6,15 +6,22 @@ export class TemperatureGradient {
         insideTemp: number,
         outsideTemp: number
     ): number[] {
+        // Replace error throw with a warning and default conductivity value.
+        components.forEach(component => {
+            if (component.conductivity <= 0) {
+                console.warn(`Component with id ${component.id} has invalid conductivity. Using default conductivity value of 1.`);
+            }
+        });
+
         const temperatures: number[] = [insideTemp];
         const totalR = components.reduce((sum, comp) => 
-            sum + (comp.thickness / 1000) / comp.conductivity, 0);
+            sum + (comp.thickness / 1000) / (comp.conductivity > 0 ? comp.conductivity : 1), 0);
         
         let currentTemp = insideTemp;
         let currentR = 0;
 
         components.forEach(component => {
-            const rValue = (component.thickness / 1000) / component.conductivity;
+            const rValue = (component.thickness / 1000) / (component.conductivity > 0 ? component.conductivity : 1);
             currentR += rValue;
             currentTemp = insideTemp - (currentR / totalR) * (insideTemp - outsideTemp);
             temperatures.push(currentTemp);
@@ -75,28 +82,59 @@ export class TemperatureGradient {
             610.7 * Math.pow(10, (7.5 * temp) / (237.3 + temp))
         );
 
-        // Calculate actual vapor pressure gradient
         const actualPressures = this.calculateVaporPressureGradient(
             components,
             temperatures[0],
             temperatures[temperatures.length - 1],
-            50, // Default RH inside
-            80  // Default RH outside
+            50,
+            80
         );
 
-        temperatures.forEach((temp, index) => {
-            if (temp <= dewPoint) {
+        // Skip first temperature (interior interface point)
+        for (let i = 1; i < temperatures.length - 1; i++) {
+            if (temperatures[i] <= dewPoint) {
                 hasRisk = true;
-                riskLayers.push(index);
+                // Adjust index to match component array (subtract 1 because temperatures array includes interior point)
+                riskLayers.push(i - 1);
             }
 
-            // Check if actual vapor pressure exceeds saturation pressure
-            if (actualPressures[index] >= saturationPressures[index]) {
+            if (actualPressures[i] >= saturationPressures[i]) {
                 vaporPressureRisk = true;
-                saturationPoints.push(index);
+                // Adjust index here as well
+                saturationPoints.push(i - 1);
             }
-        });
+        }
 
         return { hasRisk, riskLayers, vaporPressureRisk, saturationPoints };
+    }
+
+    findDewPointPosition(
+        components: WallComponent[],
+        insideTemp: number,
+        outsideTemp: number,
+        dewPoint: number
+    ): number | null {
+        // Calculate cumulative positions in meters
+        const positions = [0];
+        let totalThickness = 0;
+        components.forEach(component => {
+            totalThickness += component.thickness / 1000;
+            positions.push(totalThickness);
+        });
+        
+        // Calculate temperatures at boundaries
+        const calculatedTemps = this.calculateTemperatures(components, insideTemp, outsideTemp);
+        
+        // Find segment where dewPoint is reached (assuming insideTemp > outsideTemp)
+        for (let i = 0; i < calculatedTemps.length - 1; i++) {
+            const tStart = calculatedTemps[i];
+            const tEnd = calculatedTemps[i + 1];
+            if ((tStart >= dewPoint && tEnd <= dewPoint) || (tStart <= dewPoint && tEnd >= dewPoint)) {
+                const ratio = (tStart - dewPoint) / (tStart - tEnd);
+                const dewPos = positions[i] + ratio * (positions[i + 1] - positions[i]);
+                return dewPos;
+            }
+        }
+        return null;
     }
 }
