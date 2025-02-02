@@ -12,12 +12,12 @@ import { ExampleWallSelector } from "./components/ExampleWallSelector"
 import { StudWallSelector } from "./components/StudWallSelector"
 import { SortableTableRow } from "./SortableTableRow"
 import { WallVisualization } from "./WallVisualization"
-import { UValueIndicator } from "./UValueIndicator"
 import { WallVisualization3D } from "./WallVisualization3D"
-import { DewPointCalculator } from "@/src/DewPointCalculator"
+import { DewPointCalculator } from "@/app/components/calculator/components/DewPointCalculator"
 import { useState } from "react"
 import { DewPointDisplay } from "./components/DewPointDisplay";
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
+import Link from "next/link";
 
 export default function Calculator() {
   const {
@@ -56,6 +56,11 @@ export default function Calculator() {
   const dewPointCalculator = new DewPointCalculator();
 
   const dewPoint = dewPointCalculator.calculateDewPoint(temperature, humidity);
+
+  const wallAssembly = {
+    components,
+    studWallType
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -145,6 +150,16 @@ export default function Calculator() {
           insideRH={insideRH}
           outsideRH={outsideRH}
         />
+      </div>
+
+      <div className="mt-4">
+        <Link
+          href={`/houseSamplePage?wallAssembly=${encodeURIComponent(JSON.stringify(wallAssembly))}`}
+        >
+          <button className="px-4 py-2 bg-blue-500 text-white rounded">
+            Generate House Sample
+          </button>
+        </Link>
       </div>
     </div>
   );

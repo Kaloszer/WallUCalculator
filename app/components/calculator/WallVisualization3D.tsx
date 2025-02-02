@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Geometry, Base, Subtraction } from '@react-three/csg'
 import { WallComponent, commonMaterials, StudWallConfig } from "./types"
-import { TemperatureGradient } from "@/src/TemperatureGradient"; // Adjust alias if needed
+import { TemperatureGradient } from "@/app/components/calculator/components/TemperatureGradient"; // Adjust alias if needed
 import * as THREE from "three"; // NEW: Import THREE for DoubleSide
 
 interface WallVisualization3DProps {
@@ -15,7 +15,7 @@ interface WallVisualization3DProps {
   dewPoint: number;
 }
 
-const getComponentColor = (material: string) => {
+export const getComponentColor = (material: string) => {
   const materialInfo = commonMaterials.find(m => m.name === material)
   return materialInfo ? materialInfo.color : "#95a5a6"
 }

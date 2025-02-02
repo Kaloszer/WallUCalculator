@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { WallComponent } from "../types";
 import { Line } from "react-chartjs-2";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { TemperatureGradient } from "@/src/TemperatureGradient";
+import { TemperatureGradient } from "@/app/components/calculator/components/TemperatureGradient";
 
 import {
     Chart as ChartJS,
