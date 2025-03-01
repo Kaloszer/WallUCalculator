@@ -71,7 +71,16 @@ export const commonMaterials: Material[] = [
   { name: "Service Space", conductivity: 0.036, color: "#E8E8E8", cost: 0.5, isInsulation: true, vaporResistance: 1 },
   { name: "Windbreak", conductivity: 0.2, color: "#87CEEB", cost: 5.0, isInsulation: false, vaporResistance: 100 },
   { name: "Vapour Barrier", conductivity: 0.4, color: "#87CEEB", cost: 3.0, isInsulation: false, vaporResistance: 100000 },
-  { name: "Plaster", conductivity: 0.5, color: "#f8f8ff", cost: 5.0, isInsulation: false, vaporResistance: 10 }
+  { name: "Plaster", conductivity: 0.5, color: "#f8f8ff", cost: 5.0, isInsulation: false, vaporResistance: 10 },
+  // New Materials
+  { name: "Glass", conductivity: 1.0, color: "#E0FFFF", cost: 10.0, isInsulation: false, vaporResistance: 1 },
+  { name: "Steel", conductivity: 50.0, color: "#B0C4DE", cost: 500.0, isInsulation: false, vaporResistance: 1 },
+  { name: "Aluminum", conductivity: 200.0, color: "#D3D3D3", cost: 600.0, isInsulation: false, vaporResistance: 1 },
+  { name: "Vinyl", conductivity: 0.15, color: "#F0FFF0", cost: 5.0, isInsulation: false, vaporResistance: 1000 },
+  { name: "Cellulose Insulation", conductivity: 0.04, color: "#F5DEB3", cost: 0.5, isInsulation: true, vaporResistance: 1 },
+  { name: "Fiberglass", conductivity: 0.035, color: "#FFFFE0", cost: 0.6, isInsulation: true, vaporResistance: 1 },
+  { name: "XPS Foam", conductivity: 0.03, color: "#87CEFA", cost: 2.0, isInsulation: true, vaporResistance: 100 },
+  { name: "EPS Foam", conductivity: 0.03, color: "#B0E0E6", cost: 1.5, isInsulation: true, vaporResistance: 50 }
 ];
 
 export const MAX_LAYERS = 8;
@@ -120,12 +129,25 @@ export const exampleWalls: ExampleWall[] = [
 ];
 
 // Add utility functions that are used across components
-export const calculateRValue = (component: WallComponent) => {
-  return component.conductivity > 0 ? (component.thickness / 1000) / component.conductivity : 0;
+export const calculateRValue = (component: WallComponent, studWallConfig?: StudWallConfig) => {
+  if (component.hasStuds && studWallConfig && studWallConfig.type !== 'none') {
+    // Calculate weighted R-value for stud layer using parallel path method
+    const R_stud = (component.thickness / 1000) / studWallConfig.studConductivity;
+    const R_insul = (component.thickness / 1000) / component.conductivity;
+    const U_stud = 1 / R_stud;
+    const U_insul = 1 / R_insul;
+    const effective_U = (studWallConfig.studArea * U_stud) + ((1 - studWallConfig.studArea) * U_insul);
+    return 1 / effective_U;
+  } else {
+    return component.conductivity > 0 ? (component.thickness / 1000) / component.conductivity : 0;
+  }
 };
 
-export const calculateTotalRValue = (components: WallComponent[]) => {
-  return components.reduce((sum, comp) => sum + calculateRValue(comp), 0);
+export const calculateTotalRValue = (components: WallComponent[], studWallConfig?: StudWallConfig) => {
+  return components.reduce(
+    (sum, comp) => sum + calculateRValue(comp, comp.hasStuds ? studWallConfig : undefined), 
+    0
+  );
 };
 
 export const calculateUValue = (rValue: number) => {
