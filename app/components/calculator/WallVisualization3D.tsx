@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Geometry, Base, Subtraction } from '@react-three/csg'
 import { WallComponent, commonMaterials, StudWallConfig } from "./types"
-import { TemperatureGradient } from "@/app/components/calculator/components/TemperatureGradient"; // Adjust alias if needed
+import { findDewPointPosition } from "@/app/components/calculator/components/TemperatureGradient";
 import * as THREE from "three"; // NEW: Import THREE for DoubleSide
 
 interface WallVisualization3DProps {
@@ -181,12 +181,10 @@ export function WallVisualization3D({ components, studWallConfig, insideTemp, ou
     : undefined;
 
   // Example temperature parameters (could be replaced with props)
-  const tempGradient = new TemperatureGradient();
-
   // NEW: Wrap dew point calculation with try-catch to handle invalid component values.
   let dewPointPosition;
   try {
-    dewPointPosition = tempGradient.findDewPointPosition(components, insideTemp, outsideTemp, dewPoint);
+    dewPointPosition = findDewPointPosition(components, insideTemp, outsideTemp, dewPoint);
   } catch (error) {
     console.error(error);
     dewPointPosition = null;

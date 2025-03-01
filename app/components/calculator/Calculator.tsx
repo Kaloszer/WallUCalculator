@@ -13,7 +13,7 @@ import { StudWallSelector } from "./components/StudWallSelector"
 import { SortableTableRow } from "./SortableTableRow"
 import { WallVisualization } from "./WallVisualization"
 import { WallVisualization3D } from "./WallVisualization3D"
-import { DewPointCalculator } from "@/app/components/calculator/components/DewPointCalculator"
+import { calculateDewPoint } from "@/app/components/calculator/components/DewPointCalculator"
 import { useState } from "react"
 import { DewPointDisplay } from "./components/DewPointDisplay";
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
@@ -53,9 +53,8 @@ export default function Calculator() {
   const [outsideTemp, setOutsideTemp] = useState(5);
   const [insideRH, setInsideRH] = useState(humidity);
   const [outsideRH, setOutsideRH] = useState(80);
-  const dewPointCalculator = new DewPointCalculator();
 
-  const dewPoint = dewPointCalculator.calculateDewPoint(temperature, humidity);
+  const dewPoint = calculateDewPoint(temperature, humidity);
 
   const wallAssembly = {
     components,
