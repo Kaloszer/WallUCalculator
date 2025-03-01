@@ -148,6 +148,7 @@ export default function Calculator() {
           dewPoint={dewPoint}
           insideRH={insideRH}
           outsideRH={outsideRH}
+          studWallType={studWallType} 
         />
       </div>
 
