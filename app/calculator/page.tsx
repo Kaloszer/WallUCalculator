@@ -7,7 +7,7 @@ import { WallCalculatorProvider } from "../components/calculator/context/WallCal
 export default function CalculatorPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-slate-100">
-      <Header />
+      <Header showTitle={true} />
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-3xl font-bold mb-2 text-slate-900">Wall Assembly Calculator</h1>
