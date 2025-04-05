@@ -5,8 +5,8 @@ import { OrbitControls } from '@react-three/drei'
 import { Geometry, Base, Subtraction } from '@react-three/csg'
 import { WallComponent, commonMaterials, StudWallConfig } from "./types"
 import { findDewPointPosition } from "@/app/components/calculator/components/TemperatureGradient";
-import * as THREE from "three"; // NEW: Import THREE for DoubleSide
-import { getComponentColor } from "./utils/visualizationHelpers"; // Import the function
+import * as THREE from "three";
+import { getComponentColor } from "./utils/visualizationHelpers";
 
 interface WallVisualization3DProps {
   components: WallComponent[];
@@ -14,8 +14,8 @@ interface WallVisualization3DProps {
   insideTemp: number;
   outsideTemp: number;
   dewPoint: number;
+  scale?: number;
 }
-
 
 function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
   const studDepth = config.studDepth / 1000;
@@ -23,30 +23,24 @@ function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
   const woodColor = "#8B4513";
   const lightWoodColor = "#DEB887";
 
-  // Always create exactly 3 studs
-  const studPositions = [-0.5, 0, 0.5];  // left, middle, right positions
+  const studPositions = [-0.5, 0, 0.5];
 
   const studs = studPositions.map((xPosition, i) => {
     if (config.type === 'i-joist') {
-      const flangeWidth = 0.045;  // Width of flange
-      const webThickness = 0.011; // Thickness of web
+      const flangeWidth = 0.045;
+      const webThickness = 0.011;
       const halfStudDepth = studDepth / 2;
 
       return (
         <group key={i}>
-          {/* Left flange (vertical) */}
           <mesh position={[xPosition, 0, -halfStudDepth + (flangeWidth / 2)]}>
             <boxGeometry args={[studWidth, 1, flangeWidth]} />
             <meshStandardMaterial color={woodColor} />
           </mesh>
-
-          {/* Right flange (vertical) */}
           <mesh position={[xPosition, 0, halfStudDepth - (flangeWidth / 2)]}>
             <boxGeometry args={[studWidth, 1, flangeWidth]} />
             <meshStandardMaterial color={woodColor} />
           </mesh>
-
-          {/* Web (horizontal connecting piece) */}
           <mesh position={[xPosition, 0, 0]}>
             <boxGeometry args={[studWidth, 1, (studDepth - (2 * flangeWidth))]} />
             <meshStandardMaterial color={lightWoodColor} />
@@ -54,7 +48,6 @@ function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
         </group>
       );
     } else {
-      // Standard stud
       return (
         <mesh key={i} position={[xPosition, 0, 0]}>
           <boxGeometry args={[studWidth, 1, studDepth]} />
@@ -99,11 +92,9 @@ function WallMesh({ components, studWallConfig }: { components: WallComponent[],
   return (
     <>
       {components.map((component, index) => {
-        // NEW: Validate component has required values.
         if (!component.thickness || !component.material) {
           return (
             <group key={component.id}>
-              {/* Incomplete component: missing thickness or material */}
               <mesh>
                 <boxGeometry args={[0.1, 0.1, 0.1]} />
                 <meshBasicMaterial color="red" />
@@ -167,8 +158,9 @@ function WallMesh({ components, studWallConfig }: { components: WallComponent[],
   )
 }
 
-export function WallVisualization3D({ components, studWallConfig, insideTemp, outsideTemp, dewPoint }: WallVisualization3DProps) {
-  // NEW: Do not render if no components are present
+export function WallVisualization3D(props: WallVisualization3DProps) {
+  const { components, studWallConfig, insideTemp, outsideTemp, dewPoint, scale = 1 } = props;
+
   if (components.length === 0) {
     return null;
   }
@@ -177,8 +169,6 @@ export function WallVisualization3D({ components, studWallConfig, insideTemp, ou
     ? studWallConfig
     : undefined;
 
-  // Example temperature parameters (could be replaced with props)
-  // NEW: Wrap dew point calculation with try-catch to handle invalid component values.
   let dewPointPosition;
   try {
     dewPointPosition = findDewPointPosition(components, insideTemp, outsideTemp, dewPoint);
@@ -189,14 +179,13 @@ export function WallVisualization3D({ components, studWallConfig, insideTemp, ou
 
   const totalThicknessMeters = components.reduce((sum, comp) => sum + comp.thickness, 0) / 1000;
   const centerOffset = totalThicknessMeters / 2;
-  // If dew point is not found, do not show the dew point plane.
   const showDewPoint = dewPointPosition !== null;
   const correctedDewPoint = centerOffset - (showDewPoint && dewPointPosition !== null ? dewPointPosition : centerOffset);
 
   return (
     <div className="relative">
       <h2 className="text-xl font-semibold mb-2">3D Wall View</h2>
-      <div className="border rounded p-4" style={{ height: '400px' }}>
+      <div className="border rounded p-4" style={{ height: `${scale * 400}px` }}>
         <div style={{ position: 'relative', height: '100%' }}>
           <Canvas camera={{ position: [0.5, 0.5, 1] }}>
             <ambientLight intensity={0.8} />
@@ -208,7 +197,7 @@ export function WallVisualization3D({ components, studWallConfig, insideTemp, ou
             {showDewPoint && (
               <mesh
                 position={[correctedDewPoint, 0, 0]}
-                rotation={[0, Math.PI / 2, 0]} // Rotate to be parallel to wall
+                rotation={[0, Math.PI / 2, 0]}
               >
                 <planeGeometry args={[1.1, 1.1]} />
                 <meshBasicMaterial
@@ -224,7 +213,6 @@ export function WallVisualization3D({ components, studWallConfig, insideTemp, ou
               minAzimuthAngle={-Math.PI * 1 / 3}
             />
           </Canvas>
-          {/* Overlay labels */}
           <div style={{
             position: 'absolute', top: 10, left: 10,
             opacity: 0.7, writingMode: 'vertical-rl', pointerEvents: 'none',
