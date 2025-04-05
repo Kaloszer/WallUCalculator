@@ -6,6 +6,7 @@ import { Geometry, Base, Subtraction } from '@react-three/csg'
 import { WallComponent, commonMaterials, StudWallConfig } from "./types"
 import { findDewPointPosition } from "@/app/components/calculator/components/TemperatureGradient";
 import * as THREE from "three"; // NEW: Import THREE for DoubleSide
+import { getComponentColor } from "./utils/visualizationHelpers"; // Import the function
 
 interface WallVisualization3DProps {
   components: WallComponent[];
@@ -15,10 +16,6 @@ interface WallVisualization3DProps {
   dewPoint: number;
 }
 
-export const getComponentColor = (material: string) => {
-  const materialInfo = commonMaterials.find(m => m.name === material)
-  return materialInfo ? materialInfo.color : "#95a5a6"
-}
 
 function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
   const studDepth = config.studDepth / 1000;

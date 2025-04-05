@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import * as THREE from "three";
 import { WallComponent } from "@/app/components/calculator/types";
-import { getComponentColor } from "@/app/components/calculator/WallVisualization3D";
+import { getComponentColor } from "@/app/components/calculator/utils/visualizationHelpers"; // Corrected import path
 
 interface WallSectionProps {
   position: [number, number, number];

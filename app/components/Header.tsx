@@ -1,3 +1,4 @@
+import Link from "next/link"; // Add Link import
 import { MoveRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -10,6 +11,10 @@ export default function Header() {
           Calculate thermal performance of wall assemblies
         </p>
       </div>
+      <nav className="flex gap-4 items-center"> {/* Add nav container */}
+        <Link href="/" legacyBehavior><a className="text-sm font-medium hover:underline underline-offset-4">Home</a></Link>
+        <Link href="/calculator" legacyBehavior><a className="text-sm font-medium hover:underline underline-offset-4">Calculator</a></Link>
+      </nav>
       <Button
         variant="ghost"
         size="sm"

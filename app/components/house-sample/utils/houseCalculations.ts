@@ -33,12 +33,3 @@ export function calculateRoofHypotenuse(angle: number, width: number): number {
 export function calculateGableWallHeight(baseWallHeight: number, roofHeight: number): number {
   return baseWallHeight + roofHeight;
 }
-
-/**
- * Converts dimensions from millimeters to meters
- * @param mm Dimension in millimeters
- * @returns Dimension in meters
- */
-export function mmToM(mm: number): number {
-  return mm / 1000;
-}
