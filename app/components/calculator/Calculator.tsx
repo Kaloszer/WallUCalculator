@@ -53,8 +53,8 @@ export default function Calculator() {
   const [temperature, setTemperature] = useState(20);
   const [humidity, setHumidity] = useState(50);
   const [outsideTemp, setOutsideTemp] = useState(5);
-  const [insideRH, setInsideRH] = useState(humidity);
-  const [outsideRH, setOutsideRH] = useState(80);
+  const [insideRH] = useState(humidity);
+  const [outsideRH] = useState(80);
 
   const dewPoint = calculateDewPoint(temperature, humidity);
 
@@ -194,7 +194,7 @@ export default function Calculator() {
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div className="p-4 bg-white rounded-lg shadow-sm">
-                    <WallVisualization components={components} studWallConfig={getStudConfig()} />
+                    <WallVisualization components={components} />
                   </div>
                   <div className="p-4 bg-white rounded-lg shadow-sm">
                     <WallVisualization3D

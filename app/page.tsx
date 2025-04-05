@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Header from './components/Header';
 import { ExplodedWallView } from './components/ExplodedWallView';
@@ -12,7 +12,7 @@ export default function StartPage() {
           Wall U-Value Calculator
         </h1>
         <p className="text-xl text-slate-600 mb-12 max-w-3xl mx-auto px-4 text-center">
-          Make informed decisions about your building's thermal performance with our comprehensive wall assembly analysis tools.
+          Make informed decisions about your building&apos;s thermal performance with our comprehensive wall assembly analysis tools.
         </p>
         <ExplodedWallView />
       </main>

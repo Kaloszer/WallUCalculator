@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { WallComponent, commonMaterials, StudWallConfig } from "./types"
+import { WallComponent, commonMaterials } from "./types"
 
 interface WallVisualizationProps {
   components: WallComponent[];
-  studWallConfig?: StudWallConfig;
 }
 
 const getComponentColor = (material: string) => {
@@ -42,7 +40,7 @@ function ComponentDetails({ component }: { component: WallComponent }) {
   );
 }
 
-export function WallVisualization({ components, studWallConfig }: WallVisualizationProps) {
+export function WallVisualization({ components }: WallVisualizationProps) {
   const totalCost = components.reduce((sum, comp) => sum + calculateCost(comp), 0);
   const totalRValue = components.reduce((sum, comp) => sum + calculateRValue(comp), 0);
   const uValue = totalRValue > 0 ? 1 / totalRValue : 0;

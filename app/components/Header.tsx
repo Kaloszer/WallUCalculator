@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MoveRight, Github } from "lucide-react"
+import { Github } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface HeaderProps {

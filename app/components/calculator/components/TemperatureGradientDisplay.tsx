@@ -64,11 +64,9 @@ interface TemperatureGradientDisplayProps {
 function GradientChart({
   chartData,
   dewPoint,
-  dewPointPosition,
 }: {
   chartData: ChartDataPoint[];
   dewPoint: number;
-  dewPointPosition: number | null;
 }) {
   const chartRef = useRef<ChartJS<"line">>(null);
 
@@ -201,11 +199,6 @@ export function TemperatureGradientDisplay({
   });
   const [isClient, setIsClient] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debugInfo, setDebugInfo] = useState<{ temps: number[]; dewPoint: number }>({
-    temps: [],
-    dewPoint: 0,
-  });
-
   // Set isClient to true when component mounts to prevent hydration mismatch
   useEffect(() => {
     setIsClient(true);
@@ -246,12 +239,6 @@ export function TemperatureGradientDisplay({
 
       // Log dewPointPosition for debugging
       console.log("Dew Point Position:", dewPointPos);
-
-      // Store debug info
-      setDebugInfo({
-        temps: [...temperatures],
-        dewPoint,
-      });
 
       // Prepare chart data
       let cumulativeThickness = 0;
@@ -306,7 +293,7 @@ export function TemperatureGradientDisplay({
 
       <Suspense fallback={<div className="h-[300px] flex items-center justify-center">Loading chart...</div>}>
         {chartData.length > 0 && (
-          <GradientChart chartData={chartData} dewPoint={dewPoint} dewPointPosition={dewPointPosition} />
+          <GradientChart chartData={chartData} dewPoint={dewPoint} />
         )}
       </Suspense>
 

@@ -1,11 +1,12 @@
-import { Metadata } from "next";
-import { Suspense } from "react";
-import HouseSampleClient from "./HouseSampleClient";
+'use client';
 
-export const metadata: Metadata = {
-  title: "House Sample",
-  description: "Generated house sample with cost calculations",
-};
+import { Suspense } from "react";
+import dynamic from 'next/dynamic';
+
+const HouseSampleClient = dynamic(
+  () => import("./HouseSampleClient"),
+  { ssr: false }
+);
 
 export default function Page() {
   return (

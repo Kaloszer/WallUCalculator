@@ -3,7 +3,7 @@
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { Geometry, Base, Subtraction } from '@react-three/csg'
-import { WallComponent, commonMaterials, StudWallConfig } from "./types"
+import { WallComponent, StudWallConfig } from "./types"
 import { findDewPointPosition } from "@/app/components/calculator/components/TemperatureGradient";
 import * as THREE from "three";
 import { getComponentColor } from "./utils/visualizationHelpers";
@@ -17,7 +17,7 @@ interface WallVisualization3DProps {
   scale?: number;
 }
 
-function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
+function Studs({ config }: { config: StudWallConfig }) {
   const studDepth = config.studDepth / 1000;
   const studWidth = config.studWidth / 1000;
   const woodColor = "#8B4513";
@@ -28,7 +28,6 @@ function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
   const studs = studPositions.map((xPosition, i) => {
     if (config.type === 'i-joist') {
       const flangeWidth = 0.045;
-      const webThickness = 0.011;
       const halfStudDepth = studDepth / 2;
 
       return (
@@ -60,14 +59,13 @@ function Studs({ config, depth }: { config: StudWallConfig, depth: number }) {
   return <>{studs}</>;
 }
 
-function StudVoids({ config, position }: { config: StudWallConfig, position: number }) {
+function StudVoids({ config }: { config: StudWallConfig }) {
   const studDepth = config.studDepth / 1000;
   const studWidth = config.studWidth / 1000;
   const studPositions = [-0.5, 0, 0.5];
 
   return studPositions.map((xPosition, i) => {
     if (config.type === 'i-joist') {
-      const flangeWidth = 0.045;
       return (
         <group key={i} position={[xPosition, 0, 0]}>
           <Subtraction>
@@ -91,7 +89,7 @@ function WallMesh({ components, studWallConfig }: { components: WallComponent[],
 
   return (
     <>
-      {components.map((component, index) => {
+      {components.map((component) => {
         if (!component.thickness || !component.material) {
           return (
             <group key={component.id}>
@@ -128,7 +126,7 @@ function WallMesh({ components, studWallConfig }: { components: WallComponent[],
                       metalness={isBarrier ? 0.6 : 0.1}
                     />
                   </Base>
-                  <StudVoids config={studWallConfig} position={position} />
+                  <StudVoids config={studWallConfig} />
                 </Geometry>
               </mesh>
             ) : (
@@ -145,7 +143,7 @@ function WallMesh({ components, studWallConfig }: { components: WallComponent[],
             )}
             {shouldRenderStuds && studWallConfig && (
               <group position={[0, 0, -position]}>
-                <Studs config={studWallConfig} depth={visualThickness} />
+                <Studs config={studWallConfig} />
               </group>
             )}
           </group>

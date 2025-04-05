@@ -1,4 +1,4 @@
-import { commonMaterials, logger, MaterialProperty } from "../types";
+import { commonMaterials, logger } from "../types";
 
 export const getComponentColor = (material: string) => {
   const materialInfo = commonMaterials.find(m => m.name === material);

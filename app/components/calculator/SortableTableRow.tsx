@@ -38,9 +38,6 @@ export function SortableTableRow({
     transition,
   };
 
-  const rValue = calculateRValue(component);
-  const uValue = rValue > 0 ? 1 / rValue : 0;
-
   return (
     <TableRow ref={setNodeRef} style={style}>
       <TableCell>{index + 1}</TableCell>

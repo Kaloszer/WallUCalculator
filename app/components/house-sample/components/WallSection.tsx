@@ -30,7 +30,7 @@ export function WallSection({
   extraRoofWidth,
 }: WallSectionProps) {
   const totalThickness = wallAssembly.components.reduce((sum, comp) => sum + comp.thickness, 0) / 1000;
-  const [width, , depth] = size;
+  const [width] = size;
   const adjustedWidth = width + (isGableWall ? 0 : -0.0001);
 
   // Calculate roof dimensions here to ensure consistency
@@ -91,11 +91,8 @@ export function WallSection({
     });
   }, [
     wallAssembly.components,
-    size,
     wallHeight,
     isGableWall,
-    roofAngle,
-    extraRoofWidth,
     totalThickness,
     width,
     adjustedWidth,
