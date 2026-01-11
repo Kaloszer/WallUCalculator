@@ -1,11 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Header from "../components/Header";
-import { WallCalculatorProvider } from "../components/calculator/context/WallCalculatorContext";
+import Header from "@/app/components/Header";
+import { WallCalculatorProvider } from "@/app/components/calculator/context/WallCalculatorContext";
 
 const Calculator = dynamic(
-  () => import("../components/calculator/Calculator"),
+  () => import("@/app/components/calculator/Calculator"),
   { ssr: false }
 );
 

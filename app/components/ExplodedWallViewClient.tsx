@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { Geometry, Base, Subtraction } from '@react-three/csg';
-import { useSmoothScroll } from '../utils/smoothScroll';
+import { useSmoothScroll } from '@/app/utils/smoothScroll';
 import * as THREE from 'three';
-import { WallComponent, ExampleWall, exampleWalls, StudWallConfig } from './calculator/types';
-import { getComponentColor } from './calculator/utils/visualizationHelpers';
+import { WallComponent, ExampleWall, exampleWalls, StudWallConfig } from '@/app/components/calculator/types';
+import { getComponentColor } from '@/app/components/calculator/utils/visualizationHelpers';
 
 export interface ExplodedWallViewProps {
   onNavigate?: () => void;

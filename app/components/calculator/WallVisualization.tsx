@@ -1,16 +1,8 @@
-import { WallComponent, commonMaterials } from "./types"
+import { WallComponent, commonMaterials, calculateRValue } from "./types"
+import { getComponentColor } from "./utils/visualizationHelpers"
 
 interface WallVisualizationProps {
   components: WallComponent[];
-}
-
-const getComponentColor = (material: string) => {
-  const materialInfo = commonMaterials.find(m => m.name === material)
-  return materialInfo ? materialInfo.color : "#95a5a6"
-}
-
-const calculateRValue = (component: WallComponent) => {
-  return component.conductivity > 0 ? (component.thickness / 1000) / component.conductivity : 0
 }
 
 const calculateCost = (component: WallComponent) => {

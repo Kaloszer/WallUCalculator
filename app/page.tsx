@@ -1,7 +1,7 @@
 'use client';
 
-import Header from './components/Header';
-import { ExplodedWallView } from './components/ExplodedWallView';
+import Header from '@/app/components/Header';
+import { ExplodedWallView } from '@/app/components/ExplodedWallView';
 
 export default function StartPage() {
   return (
