@@ -49,13 +49,22 @@ export function calculateDewPoint(
   try {
     // Magnus-Tetens formula constants
     const a = 17.27;
-    const b = 237.7;
+    const b = 237.3;
 
-    // Calculate gamma: γ(b) = b * ln(h / 100)
-    const gamma = b * Math.log(relativeHumidity / 100);
+    // Convert temperature to Kelvin for calculation
+    const temperatureKelvin = temperature + 273.15;
 
-    // Calculate dew point: Td = b * γ(b) / (a - γ(b))
-    const dewPoint = (b * gamma) / (a - gamma);
+    // Calculate ln(RH/100)
+    const lnRH = Math.log(relativeHumidity / 100);
+
+    // Calculate alpha: α = [ln(RH/100)] + [a × T / (b + T)]
+    const alpha = lnRH + (a * temperatureKelvin) / (b + temperatureKelvin);
+
+    // Calculate dew point in Kelvin: Td = (b × α) / (a - α)
+    const dewPointKelvin = (b * alpha) / (a - alpha);
+
+    // Convert to Celsius: Td(C) = Td(K) - 273.15
+    const dewPoint = dewPointKelvin - 273.15;
 
     return {
       dewPoint,
