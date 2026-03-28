@@ -17,6 +17,8 @@ import { WallVisualization } from "./WallVisualization"
 import { WallVisualization3D } from "./WallVisualization3D"
 import { calculateDewPoint } from "@/app/components/calculator/components/DewPointCalculator"
 import { useState, useCallback, useMemo } from "react"
+import { calculateTotalRValue } from "@/lib/calculations/rValue"
+import { calculateThermalPerformance } from "@/lib/calculations/cost"
 import { DewPointDisplay } from "./components/DewPointDisplay"
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
 import MaterialDatabase from "@/app/components/material-database/MaterialDatabase"
@@ -42,8 +44,8 @@ export default function Calculator() {
     reorderComponents
   } = useWallCalculator();
 
-  // Memoize stud config to prevent re-renders
-  const studWallConfig = useMemo(() => getStudConfig(), []);
+  // Get latest stud config - getStudConfig is stabilized via useCallback([studWallType, iJoistDepth])
+  const studWallConfig = useMemo(() => getStudConfig(), [getStudConfig]);
 
   // State hooks (must be before useMemo)
   const [temperature, setTemperature] = useState(20);
@@ -73,6 +75,10 @@ export default function Calculator() {
 
   // Memoize dew point calculation
   const dewPoint = useMemo(() => calculateDewPoint(temperature, humidity), [temperature, humidity]);
+
+  // Compute actual thermal performance for export/reporting
+  const totalRValue = useMemo(() => calculateTotalRValue(components, studWallConfig, true), [components, studWallConfig]);
+  const performance = useMemo(() => calculateThermalPerformance(components, totalRValue), [components, totalRValue]);
 
   // Memoize wall assembly object
   const wallAssembly = useMemo(() => ({
@@ -205,8 +211,8 @@ export default function Calculator() {
               currentLocation={selectedLocation ?? undefined}
             />
             <ClimateDisplay
-              lat={selectedLocation?.lat ?? 0}
-              lon={selectedLocation?.lon ?? 0}
+              lat={selectedLocation?.lat ?? NaN}
+              lon={selectedLocation?.lon ?? NaN}
               locationName={selectedLocation?.displayName}
             />
           </div>
@@ -352,12 +358,7 @@ export default function Calculator() {
         onOpenChange={setShowExportDialog}
         components={components}
         studWallConfig={studWallConfig}
-        performance={{
-          totalRValue: 0,
-          uValue: 0,
-          totalCost: 0,
-          costEffectiveness: 0
-        }}
+        performance={performance}
         environmental={{
           insideTemp: temperature,
           outsideTemp: outsideTemp,
@@ -372,12 +373,7 @@ export default function Calculator() {
         reportData={{
           components,
           studWallConfig,
-          performance: {
-            totalRValue: 0,
-            uValue: 0,
-            totalCost: 0,
-            costEffectiveness: 0
-          },
+          performance,
           insideTemp: temperature,
           outsideTemp: outsideTemp,
           dewPoint: dewPoint,

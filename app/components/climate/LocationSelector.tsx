@@ -7,7 +7,7 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { MapPin, Search, Loader2, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -52,7 +52,16 @@ export function LocationSelector({
   const [results, setResults] = useState<GeocodeResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clean up pending timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Search for location with debouncing
@@ -99,17 +108,15 @@ export function LocationSelector({
     setQuery(value);
 
     // Clear previous timer
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
 
     // Set new timer for 500ms debounce
-    const timer = setTimeout(() => {
+    debounceTimerRef.current = setTimeout(() => {
       handleSearch(value);
     }, 500);
-
-    setDebounceTimer(timer);
-  }, [debounceTimer, handleSearch]);
+  }, [handleSearch]);
 
   /**
    * Handle location selection

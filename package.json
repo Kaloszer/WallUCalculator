@@ -42,6 +42,7 @@
     "jspdf-autotable": "^5.0.7",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.453.0",
+    "lz-string": "^1.5.0",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",

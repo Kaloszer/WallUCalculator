@@ -246,52 +246,49 @@ function calculateClimateMetrics(daily: OpenMeteoDailyData) {
 }
 
 /**
+ * Simple in-memory cache for climate data on the server.
+ * Keyed by normalized lat/lon string with a timestamp for TTL enforcement.
+ *
+ * Note: This cache is process-local and will be lost on cold starts or across
+ * multiple instances. For production use with high traffic or serverless
+ * deployments, consider a distributed cache (e.g., Redis or Vercel KV).
+ */
+const climateDataCache = new Map<string, { timestamp: number; climateData: ClimateDataResult }>();
+
+/**
  * Get climate data from cache
  */
 function getCachedClimateData(lat: number, lon: number): ClimateDataResult | null {
-  if (typeof window === 'undefined') return null;
-
   const key = CACHE_KEY_PREFIX + `${lat.toFixed(4)}_${lon.toFixed(4)}`;
-  const cached = localStorage.getItem(key);
+  const entry = climateDataCache.get(key);
 
-  if (!cached) return null;
-
-  try {
-    const data = JSON.parse(cached);
-    const age = Date.now() - data.timestamp;
-
-    if (age > CACHE_TTL) {
-      localStorage.removeItem(key);
-      return null;
-    }
-
-    return {
-      ...data.climateData,
-      cachedAt: new Date(data.timestamp).toISOString(),
-    };
-  } catch {
-    localStorage.removeItem(key);
+  if (!entry) {
     return null;
   }
+
+  const age = Date.now() - entry.timestamp;
+
+  if (age > CACHE_TTL) {
+    climateDataCache.delete(key);
+    return null;
+  }
+
+  return {
+    ...entry.climateData,
+    cachedAt: new Date(entry.timestamp).toISOString(),
+  };
 }
 
 /**
  * Store climate data in cache
  */
 function setCachedClimateData(lat: number, lon: number, climateData: ClimateDataResult): void {
-  if (typeof window === 'undefined') return;
-
   const key = CACHE_KEY_PREFIX + `${lat.toFixed(4)}_${lon.toFixed(4)}`;
-  const data = {
+
+  climateDataCache.set(key, {
     timestamp: Date.now(),
     climateData,
-  };
-
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.warn('Failed to cache climate data:', error);
-  }
+  });
 }
 
 /**

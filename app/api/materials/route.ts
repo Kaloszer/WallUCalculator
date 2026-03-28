@@ -4,35 +4,21 @@ import { validateMaterial } from '@/lib/calculations/materials';
 
 export const dynamic = 'force-dynamic';
 
-const MATERIALS_FILE = '.materials-db.json';
-
 let materialsCache: ExtendedMaterial[] | null = null;
 
 async function loadMaterials(): Promise<ExtendedMaterial[]> {
   if (materialsCache) return materialsCache;
 
-  try {
-    const fs = await import('fs/promises');
-    const path = await import('path');
-    const filePath = path.join(process.cwd(), MATERIALS_FILE);
-
-    const data = await fs.readFile(filePath, 'utf-8');
-    materialsCache = JSON.parse(data) as ExtendedMaterial[];
-    return materialsCache;
-  } catch {
-    console.log('No materials database found, using defaults');
-    materialsCache = [...defaultMaterials];
-    await saveMaterials(materialsCache);
-    return materialsCache;
-  }
+  // Initialize from defaults on first use. For durable persistence across
+  // deployments or instances, replace this with a real backing store (DB/KV).
+  materialsCache = [...defaultMaterials];
+  return materialsCache;
 }
 
 async function saveMaterials(materials: ExtendedMaterial[]): Promise<void> {
-  const fs = await import('fs/promises');
-  const path = await import('path');
-  const filePath = path.join(process.cwd(), MATERIALS_FILE);
-
-  await fs.writeFile(filePath, JSON.stringify(materials, null, 2), 'utf-8');
+  // Persist only in memory; for durable persistence across deployments or
+  // multiple instances, replace this with a proper backing store (DB/KV).
+  // Note: user-added materials will be lost on server restart or redeployment.
   materialsCache = materials;
 }
 

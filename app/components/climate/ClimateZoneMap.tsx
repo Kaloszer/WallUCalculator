@@ -7,53 +7,23 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { MapContainer, Marker, Popup, useMapEvents, TileLayer } from 'react-leaflet';
 import { MapPin } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CLIMATE_ZONES } from '@/lib/constants/climateZones';
 
-// Dynamically import Leaflet to avoid SSR issues
-const MapComponent = dynamic(() => import('react-leaflet').then(mod => ({ default: mod.MapContainer })), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-    </div>
-  )
-});
-
-/**
- * Marker component with click handler
- */
-function LocationMarker({
-  position,
-  onLocationSelect
-}: {
-  position: [number, number] | null;
-  onLocationSelect: (lat: number, lon: number) => void;
-}) {
-  const map = useMapEvents({
-    click(e) {
-      map.locate();
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
-    },
-  });
-
-  return position === null ? null : (
-    <Marker position={position}>
-      <Popup>
-        <div className="text-sm">
-          <div className="font-medium">Selected Location</div>
-          <div className="text-gray-600 mt-1">
-            {position[0].toFixed(4)}°, {position[1].toFixed(4)}°
-          </div>
-        </div>
-      </Popup>
-    </Marker>
-  );
-}
+// Dynamically import all Leaflet map code to avoid SSR issues
+const LeafletClimateZoneMap = dynamic(
+  () => import('./LeafletClimateZoneMap').then(mod => ({ default: mod.LeafletClimateZoneMap })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      </div>
+    ),
+  }
+);
 
 interface ClimateZoneMapProps {
   /** Callback when location is selected */
@@ -75,38 +45,6 @@ export function ClimateZoneMap({
   selectedPosition = null,
   showLegend = true
 }: ClimateZoneMapProps) {
-  const [isClient, setIsClient] = useState(false);
-  const [position, setPosition] = useState<[number, number] | null>(selectedPosition || null);
-
-  // Handle client-side rendering
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const handleLocationSelect = (lat: number, lon: number) => {
-    setPosition([lat, lon]);
-    onLocationSelect(lat, lon);
-  };
-
-  if (!isClient) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MapPin className="h-5 w-5" />
-            Climate Zone Map
-          </CardTitle>
-          <CardDescription>Click on the map to select a location</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader>
@@ -120,23 +58,14 @@ export function ClimateZoneMap({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Map */}
+          {/* Map - loaded client-side only to avoid SSR issues */}
           <div className="h-[500px] rounded-lg overflow-hidden border">
-            <MapComponent
+            <LeafletClimateZoneMap
               center={center}
               zoom={zoom}
-              style={{ height: '100%', width: '100%' }}
-              className="z-0"
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-              <LocationMarker
-                position={position}
-                onLocationSelect={handleLocationSelect}
-              />
-            </MapComponent>
+              selectedPosition={selectedPosition}
+              onLocationSelect={onLocationSelect}
+            />
           </div>
 
           {/* Climate Zone Legend */}

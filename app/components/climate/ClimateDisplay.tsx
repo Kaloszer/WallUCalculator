@@ -39,7 +39,7 @@ export function ClimateDisplay({
   const [dataLoading, setDataLoading] = useState(false);
 
   useEffect(() => {
-    if (!lat || !lon) return;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
 
     const fetchClimateData = async () => {
       setDataLoading(true);

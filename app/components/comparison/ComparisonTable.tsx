@@ -83,18 +83,19 @@ export function ComparisonTable({
                     {assembly.rValue.toFixed(3)} m²K/W
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {index > 0 && (
-                      <>
-                        {calculatePercentageDiff(assembly.rValue, baselineRValue) > 0 ? (
-                          <span className="text-green-600">+</span>
-                        ) : (
-                          <span className="text-red-600">
-                            {calculatePercentageDiff(assembly.rValue, baselineRValue)}
+                    {index > 0 &&
+                      (() => {
+                        const diff = calculatePercentageDiff(assembly.rValue, baselineRValue);
+                        const formatted = diff.toFixed(1);
+                        const isPositive = diff > 0;
+                        const className = isPositive ? 'text-green-600' : 'text-red-600';
+                        const prefix = isPositive ? '+' : '';
+                        return (
+                          <span className={className}>
+                            {`${prefix}${formatted}%`}
                           </span>
-                        )}
-                        {calculatePercentageDiff(assembly.rValue, baselineRValue).toFixed(1)}%
-                      </>
-                    )}
+                        );
+                      })()}
                   </div>
                 </div>
               </TableCell>

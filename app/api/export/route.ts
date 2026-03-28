@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       headers: {
         'Content-Type': mimeType,
         'Content-Disposition': `attachment; filename="${filename}"`,
-        'Content-Length': Buffer.byteLength(fileContent as string).toString()
+        'Content-Length': (Buffer.isBuffer(fileContent) ? fileContent.length : Buffer.byteLength(fileContent)).toString()
       }
     });
 
