@@ -1,12 +1,10 @@
+"use client"
+
 import { WallComponent, commonMaterials } from "./types"
+import { getComponentColor } from "./utils/visualizationHelpers"
 
 interface WallVisualizationProps {
   components: WallComponent[];
-}
-
-const getComponentColor = (material: string) => {
-  const materialInfo = commonMaterials.find(m => m.name === material)
-  return materialInfo ? materialInfo.color : "#95a5a6"
 }
 
 const calculateRValue = (component: WallComponent) => {
@@ -44,9 +42,28 @@ export function WallVisualization({ components }: WallVisualizationProps) {
   const totalCost = components.reduce((sum, comp) => sum + calculateCost(comp), 0);
   const totalRValue = components.reduce((sum, comp) => sum + calculateRValue(comp), 0);
   const uValue = totalRValue > 0 ? 1 / totalRValue : 0;
-  const averageCostEffectiveness = components.length > 0 
+  const averageCostEffectiveness = components.length > 0
     ? components.reduce((sum, comp) => sum + calculateCostEffectiveness(comp), 0) / components.length
     : 0;
+
+  // Calculate total thickness once to avoid repeated computation
+  const totalThickness = components.reduce((sum, c) => sum + c.thickness, 0);
+
+  // Handle empty state
+  if (components.length === 0) {
+    return (
+      <div className="mt-4 space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold mb-2">Wall Visualization</h2>
+          <div className="border rounded-lg bg-white">
+            <div className="flex h-48 items-center justify-center bg-gray-50">
+              <p className="text-gray-500">No wall components to display</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-4 space-y-6">
@@ -58,7 +75,7 @@ export function WallVisualization({ components }: WallVisualizationProps) {
               <div
                 key={component.id}
                 style={{
-                  width: `${(component.thickness / components.reduce((sum, c) => sum + c.thickness, 0)) * 100}%`,
+                  width: totalThickness > 0 ? `${(component.thickness / totalThickness) * 100}%` : '0%',
                   backgroundColor: getComponentColor(component.material),
                 }}
                 className="h-full relative group cursor-pointer"

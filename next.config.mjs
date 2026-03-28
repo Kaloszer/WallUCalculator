@@ -9,7 +9,6 @@ const nextConfig = {
       }
     ]
   },
-  output: 'export',
   // Only apply basePath in production
   basePath: process.env.NODE_ENV === 'production' ? '/WallUCalculator' : '',
   trailingSlash: true

@@ -169,3 +169,58 @@ export function getCondensationRiskLevel(
   if (difference > 0) return 'medium';
   return 'high';
 }
+
+/**
+ * Calculate dew point curve across temperature distribution
+ *
+ * @param temperatures - Array of temperatures in Celsius
+ * @param relativeHumidity - Relative humidity in percentage
+ * @returns Array of dew point temperatures corresponding to each input temperature
+ */
+export function calculateDewPointCurve(
+  temperatures: number[],
+  relativeHumidity: number
+): number[] {
+  return temperatures.map(temp => {
+    const result = calculateDewPoint(temp, relativeHumidity);
+    return result.valid ? result.dewPoint : temp;
+  });
+}
+
+/**
+ * Get condensation probability at a surface
+ *
+ * Calculates the probability of condensation occurring based on
+ * how close the surface temperature is to the dew point.
+ *
+ * @param surfaceTemp - Surface temperature in Celsius
+ * @param indoorTemp - Indoor temperature in Celsius
+ * @param indoorRH - Indoor relative humidity in percentage
+ * @returns Probability from 0 to 1 (0% to 100%)
+ */
+export function getCondensationProbability(
+  surfaceTemp: number,
+  indoorTemp: number,
+  indoorRH: number
+): number {
+  // Calculate dew point at indoor conditions
+  const dewPointResult = calculateDewPoint(indoorTemp, indoorRH);
+  if (!dewPointResult.valid) {
+    return 0;
+  }
+
+  const dewPoint = dewPointResult.dewPoint;
+  const difference = surfaceTemp - dewPoint;
+
+  // If surface is already below dew point, condensation is certain
+  if (difference <= 0) {
+    return 1.0;
+  }
+
+  // Probability decreases as surface temp rises above dew point
+  // Using sigmoid-like function for smooth transition
+  const safetyMargin = 5; // 5°C margin for zero probability
+  const probability = 1 - Math.min(difference / safetyMargin, 1);
+
+  return Math.max(0, Math.min(1, probability));
+}

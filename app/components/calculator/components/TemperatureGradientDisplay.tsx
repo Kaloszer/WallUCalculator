@@ -22,6 +22,18 @@ import {
 import AnnotationPlugin from "chartjs-plugin-annotation";
 import { Line } from "react-chartjs-2";
 import { Suspense } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GlaserDiagram } from "@/app/components/moisture/GlaserDiagram";
+import { MoistureTimeline } from "@/app/components/moisture/MoistureTimeline";
+import { CondensationAlert } from "@/app/components/moisture/CondensationAlert";
+import {
+  calculateAnnualMoistureAnalysis,
+  performGlaserAnalysis,
+  generateDefaultMonthlyClimate,
+  type AnnualMoistureAnalysis,
+  type GlaserAnalysisResult,
+  type MonthlyClimateData,
+} from "@/lib/calculations/moisture";
 
 // Register Chart.js components and plugins
 ChartJS.register(
@@ -199,6 +211,13 @@ export function TemperatureGradientDisplay({
   });
   const [isClient, setIsClient] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [moistureAnalysis, setMoistureAnalysis] = useState<{
+    annual: AnnualMoistureAnalysis | null;
+    glaser: GlaserAnalysisResult | null;
+    monthlyClimate: MonthlyClimateData[] | null;
+  } | null>(null);
+  const [activeTab, setActiveTab] = useState("gradient");
+
   // Set isClient to true when component mounts to prevent hydration mismatch
   useEffect(() => {
     setIsClient(true);
@@ -237,6 +256,26 @@ export function TemperatureGradientDisplay({
         studWallType
       );
 
+      // Perform annual moisture analysis
+      const monthlyClimate = generateDefaultMonthlyClimate();
+      const annualAnalysis = calculateAnnualMoistureAnalysis(
+        components,
+        insideTemp,
+        insideRH,
+        monthlyClimate,
+        studWallType
+      );
+
+      // Perform Glaser analysis for current conditions
+      const glaserResult = performGlaserAnalysis(
+        components,
+        insideTemp,
+        insideRH,
+        outsideTemp,
+        outsideRH,
+        studWallType
+      );
+
       // Log dewPointPosition for debugging
       console.log("Dew Point Position:", dewPointPos);
 
@@ -266,6 +305,11 @@ export function TemperatureGradientDisplay({
       setChartData(data);
       setDewPointPosition(dewPointPos);
       setCondensationRisk(risk);
+      setMoistureAnalysis({
+        annual: annualAnalysis,
+        glaser: glaserResult,
+        monthlyClimate,
+      });
       setError(null);
     } catch (err) {
       console.error("Error calculating temperature gradient:", err);
@@ -273,7 +317,7 @@ export function TemperatureGradientDisplay({
     }
   }, [components, insideTemp, outsideTemp, dewPoint, insideRH, outsideRH, studWallType]);
 
-  // Don’t render chart until client-side to prevent hydration issues
+  // Don't render chart until client-side to prevent hydration issues
   if (!isClient) {
     return <div className="mt-4 h-[300px] w-full flex items-center justify-center">Loading chart...</div>;
   }
@@ -289,47 +333,88 @@ export function TemperatureGradientDisplay({
 
   return (
     <div className="mt-4">
-      <h2 className="text-xl font-semibold mb-2">Temperature & Vapor Pressure Gradient</h2>
+      <h2 className="text-xl font-semibold mb-2">Temperature & Moisture Analysis</h2>
 
-      <Suspense fallback={<div className="h-[300px] flex items-center justify-center">Loading chart...</div>}>
-        {chartData.length > 0 && (
-          <GradientChart chartData={chartData} dewPoint={dewPoint} />
-        )}
-      </Suspense>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="gradient">Temperature Gradient</TabsTrigger>
+          <TabsTrigger value="glaser">Glaser Diagram</TabsTrigger>
+          <TabsTrigger value="timeline">Moisture Timeline</TabsTrigger>
+          <TabsTrigger value="alerts">Condensation Alerts</TabsTrigger>
+        </TabsList>
 
-      <div className="mt-4 p-4 rounded-md bg-blue-50 text-blue-800 space-y-2">
-        <div className="flex justify-between items-start">
-          <div>
-            <p className="font-semibold">Temperature Assessment:</p>
-            {dewPointPosition !== null ? (
-              <p>
-                Dew point ({dewPoint.toFixed(1)}°C) occurs at position:{" "}
-                <span className="font-semibold">{dewPointPosition.toFixed(3)}m</span>
-              </p>
-            ) : (
-              <p>No dew point intersection detected in the wall assembly.</p>
+        <TabsContent value="gradient" className="space-y-4">
+          <Suspense fallback={<div className="h-[300px] flex items-center justify-center">Loading chart...</div>}>
+            {chartData.length > 0 && (
+              <GradientChart chartData={chartData} dewPoint={dewPoint} />
+            )}
+          </Suspense>
+
+          <div className="p-4 rounded-md bg-blue-50 text-blue-800 space-y-2">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="font-semibold">Temperature Assessment:</p>
+                {dewPointPosition !== null ? (
+                  <p>
+                    Dew point ({dewPoint.toFixed(1)}°C) occurs at position:{" "}
+                    <span className="font-semibold">{dewPointPosition.toFixed(3)}m</span>
+                  </p>
+                ) : (
+                  <p>No dew point intersection detected in the wall assembly.</p>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold">Inside Temperature: {insideTemp.toFixed(1)}°C</p>
+                <p className="font-semibold">Outside Temperature: {outsideTemp.toFixed(1)}°C</p>
+              </div>
+            </div>
+
+            {condensationRisk.hasRisk && (
+              <div className="mt-2 p-3 bg-red-50 border border-red-300 rounded-md text-red-600">
+                <p className="font-semibold">⚠️ Condensation Risk Detected</p>
+                <p>Risk in materials: {riskMaterials.join(", ")}</p>
+              </div>
+            )}
+
+            {condensationRisk.vaporPressureRisk && (
+              <div className="mt-2 p-3 bg-amber-50 border border-amber-300 rounded-md text-amber-700">
+                <p className="font-semibold">⚠️ Vapor Pressure Warning</p>
+                <p>Vapor pressure exceeds saturation pressure in some layers of wall assembly.</p>
+              </div>
             )}
           </div>
-          <div>
-            <p className="font-semibold">Inside Temperature: {insideTemp.toFixed(1)}°C</p>
-            <p className="font-semibold">Outside Temperature: {outsideTemp.toFixed(1)}°C</p>
-          </div>
-        </div>
+        </TabsContent>
 
-        {condensationRisk.hasRisk && (
-          <div className="mt-2 p-3 bg-red-50 border border-red-300 rounded-md text-red-600">
-            <p className="font-semibold">⚠️ Condensation Risk Detected</p>
-            <p>Risk in materials: {riskMaterials.join(", ")}</p>
-          </div>
-        )}
+        <TabsContent value="glaser" className="space-y-4">
+          {moistureAnalysis && moistureAnalysis.glaser && (
+            <GlaserDiagram
+              vaporPressures={moistureAnalysis.glaser.vaporPressures}
+              saturationPressures={moistureAnalysis.glaser.saturationPressures}
+              temperatures={moistureAnalysis.glaser.temperatures}
+              materials={["Inside Surface", ...components.map(c => c.material)]}
+            />
+          )}
+        </TabsContent>
 
-        {condensationRisk.vaporPressureRisk && (
-          <div className="mt-2 p-3 bg-amber-50 border border-amber-300 rounded-md text-amber-700">
-            <p className="font-semibold">⚠️ Vapor Pressure Warning</p>
-            <p>Vapor pressure exceeds saturation pressure in some layers of the wall assembly.</p>
-          </div>
-        )}
-      </div>
+        <TabsContent value="timeline" className="space-y-4">
+          {moistureAnalysis && moistureAnalysis.annual && (
+            <MoistureTimeline
+              monthlyData={moistureAnalysis.annual.monthlyData}
+              materials={components.map(c => c.material)}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="alerts" className="space-y-4">
+          {moistureAnalysis && moistureAnalysis.annual && (
+            <CondensationAlert
+              condensationRisk={moistureAnalysis.annual.condensationRisk}
+              monthlyData={moistureAnalysis.annual.monthlyData}
+              dryingPotential={moistureAnalysis.annual.dryingPotential}
+            />
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Plus, Building2 } from "lucide-react"
+import { Plus, Building2, Database, Shield, Scale, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -19,6 +19,15 @@ import { calculateDewPoint } from "@/app/components/calculator/components/DewPoi
 import { useState, useCallback, useMemo } from "react"
 import { DewPointDisplay } from "./components/DewPointDisplay"
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
+import MaterialDatabase from "@/app/components/material-database/MaterialDatabase"
+import { LocationSelector } from "@/app/components/climate/LocationSelector"
+import { ClimateDisplay } from "@/app/components/climate/ClimateDisplay"
+import { ComplianceDashboard } from "@/app/components/compliance/ComplianceDashboard"
+import ComparisonView from "@/app/components/comparison/ComparisonView"
+import { ExportDialog } from "@/app/components/reporting/ExportDialog"
+import { ReportGenerator } from "@/app/components/reporting/ReportGenerator"
+import { ClimateZone, DEFAULT_CLIMATE_ZONE, CLIMATE_ZONE_DESCRIPTIONS } from "@/lib/data/buildingCodes"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 
 export default function Calculator() {
@@ -32,6 +41,9 @@ export default function Calculator() {
     getStudConfig,
     reorderComponents
   } = useWallCalculator();
+
+  // Memoize stud config to prevent re-renders
+  const studWallConfig = useMemo(() => getStudConfig(), []);
 
   // State hooks (must be before useMemo)
   const [temperature, setTemperature] = useState(20);
@@ -68,20 +80,43 @@ export default function Calculator() {
     studWallType
   }), [components, studWallType]);
 
+  // State for new features
+  const [selectedLocation, setSelectedLocation] = useState<{lat: number; lon: number; displayName: string; city?: string; country?: string; region?: string} | null>(null);
+  const [climateZone, setClimateZone] = useState<ClimateZone>(DEFAULT_CLIMATE_ZONE);
+  const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showReportGenerator, setShowReportGenerator] = useState(false);
+
   return (
     <div className="space-y-8">
       <Tabs defaultValue="assembly" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-8">
-          <TabsTrigger value="assembly">Wall Assembly</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-7 mb-8">
+          <TabsTrigger value="assembly">Assembly</TabsTrigger>
+          <TabsTrigger value="materials">Materials</TabsTrigger>
+          <TabsTrigger value="climate">Climate</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
+          <TabsTrigger value="compliance">Compliance</TabsTrigger>
+          <TabsTrigger value="comparison">Compare</TabsTrigger>
           <TabsTrigger value="visualization">Visualization</TabsTrigger>
         </TabsList>
 
         <TabsContent value="assembly">
           <Card>
             <CardHeader>
-              <CardTitle>Wall Assembly Configuration</CardTitle>
-              <CardDescription>Configure your wall layers and materials</CardDescription>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>Wall Assembly Configuration</CardTitle>
+                  <CardDescription>Configure your wall layers and materials</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setShowExportDialog(true)}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Export
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowReportGenerator(true)}>
+                    Export PDF
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -148,7 +183,34 @@ export default function Calculator() {
             </CardContent>
           </Card>
         </TabsContent>
+        <TabsContent value="materials">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Material Database
+              </CardTitle>
+              <CardDescription>Manage custom materials and material properties</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MaterialDatabase />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
+        <TabsContent value="climate">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <LocationSelector
+              onLocationSelect={(location) => setSelectedLocation(location)}
+              currentLocation={selectedLocation ?? undefined}
+            />
+            <ClimateDisplay
+              lat={selectedLocation?.lat ?? 0}
+              lon={selectedLocation?.lon ?? 0}
+              locationName={selectedLocation?.displayName}
+            />
+          </div>
+        </TabsContent>
         <TabsContent value="analysis">
           <div className="grid gap-6">
             <Card>
@@ -188,7 +250,57 @@ export default function Calculator() {
             </Card>
           </div>
         </TabsContent>
+        <TabsContent value="compliance">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                Compliance & Standards
+              </CardTitle>
+              <CardDescription>Check wall assembly against building codes (ASHRAE, IECC, etc.)</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium">Climate Zone:</span>
+                <Select
+                  value={String(climateZone)}
+                  onValueChange={(value) => setClimateZone(Number(value) as ClimateZone)}
+                >
+                  <SelectTrigger className="w-[300px]">
+                    <SelectValue placeholder="Select climate zone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.entries(CLIMATE_ZONE_DESCRIPTIONS) as [string, string][]).map(([zone, description]) => (
+                      <SelectItem key={zone} value={zone}>
+                        Zone {zone} - {description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <ComplianceDashboard
+                components={components}
+                studWallConfig={studWallConfig}
+                climateZone={climateZone}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
 
+        <TabsContent value="comparison">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Scale className="h-5 w-5" />
+                Wall Assembly Comparison
+              </CardTitle>
+              <CardDescription>Compare multiple wall assemblies side-by-side</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ComparisonView />
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="visualization">
           <div className="grid gap-6">
             <Card>
@@ -204,7 +316,7 @@ export default function Calculator() {
                   <div className="p-4 bg-white rounded-lg shadow-sm">
                     <WallVisualization3D
                       components={components}
-                      studWallConfig={getStudConfig()}
+                      studWallConfig={studWallConfig}
                       insideTemp={temperature}
                       outsideTemp={outsideTemp}
                       dewPoint={dewPoint}
@@ -233,6 +345,45 @@ export default function Calculator() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Export Dialog */}
+      <ExportDialog
+        open={showExportDialog}
+        onOpenChange={setShowExportDialog}
+        components={components}
+        studWallConfig={studWallConfig}
+        performance={{
+          totalRValue: 0,
+          uValue: 0,
+          totalCost: 0,
+          costEffectiveness: 0
+        }}
+        environmental={{
+          insideTemp: temperature,
+          outsideTemp: outsideTemp,
+          dewPoint: dewPoint
+        }}
+      />
+
+      {/* Report Generator Dialog */}
+      <ReportGenerator
+        open={showReportGenerator}
+        onOpenChange={setShowReportGenerator}
+        reportData={{
+          components,
+          studWallConfig,
+          performance: {
+            totalRValue: 0,
+            uValue: 0,
+            totalCost: 0,
+            costEffectiveness: 0
+          },
+          insideTemp: temperature,
+          outsideTemp: outsideTemp,
+          dewPoint: dewPoint,
+          generatedAt: new Date()
+        }}
+      />
     </div>
   );
 }
