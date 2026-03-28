@@ -57,7 +57,8 @@ export function calculateTemperatures(
  * @returns R-value in m²K/W
  */
 function calculateComponentRValue(
-  component: WallComponent
+  component: WallComponent,
+  studWallType?: string
 ): number {
   const thicknessM = component.thickness * MM_TO_M;
   return thicknessM / component.conductivity;

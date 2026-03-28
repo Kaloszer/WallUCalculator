@@ -193,6 +193,12 @@
       "type": "file"
     },
     {
+      "path": "app/components/calculator/Calculator.tsx",
+      "accessCount": 16,
+      "lastAccessed": 1774680529490,
+      "type": "file"
+    },
+    {
       "path": "lib/calculations/dewPoint.ts",
       "accessCount": 12,
       "lastAccessed": 1774650329195,
@@ -200,8 +206,8 @@
     },
     {
       "path": "lib/calculations/temperatureGradient.ts",
-      "accessCount": 10,
-      "lastAccessed": 1774649470429,
+      "accessCount": 12,
+      "lastAccessed": 1774650394920,
       "type": "file"
     },
     {
@@ -214,12 +220,6 @@
       "path": "lib/utils/materialHelpers.ts",
       "accessCount": 3,
       "lastAccessed": 1774649434432,
-      "type": "file"
-    },
-    {
-      "path": "app/components/calculator/Calculator.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1774649883410,
       "type": "file"
     },
     {

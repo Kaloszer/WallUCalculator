@@ -16,7 +16,7 @@ import { SortableTableRow } from "./SortableTableRow"
 import { WallVisualization } from "./WallVisualization"
 import { WallVisualization3D } from "./WallVisualization3D"
 import { calculateDewPoint } from "@/app/components/calculator/components/DewPointCalculator"
-import { useState } from "react"
+import { useState, useCallback, useMemo } from "react"
 import { DewPointDisplay } from "./components/DewPointDisplay"
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
 import Link from "next/link"
@@ -33,6 +33,14 @@ export default function Calculator() {
     reorderComponents
   } = useWallCalculator();
 
+  // State hooks (must be before useMemo)
+  const [temperature, setTemperature] = useState(20);
+  const [humidity, setHumidity] = useState(50);
+  const [outsideTemp, setOutsideTemp] = useState(5);
+  const [insideRH] = useState(humidity);
+  const [outsideRH] = useState(80);
+
+  // Configure sensors (must be at component top level)
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -40,7 +48,8 @@ export default function Calculator() {
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  // Memoize drag handler to prevent unnecessary re-creates
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
 
     if (over && active.id !== over.id) {
@@ -48,20 +57,16 @@ export default function Calculator() {
       const newIndex = components.findIndex(comp => comp.id === over.id);
       reorderComponents(oldIndex, newIndex);
     }
-  };
+  }, [components, reorderComponents]);
 
-  const [temperature, setTemperature] = useState(20);
-  const [humidity, setHumidity] = useState(50);
-  const [outsideTemp, setOutsideTemp] = useState(5);
-  const [insideRH] = useState(humidity);
-  const [outsideRH] = useState(80);
+  // Memoize dew point calculation
+  const dewPoint = useMemo(() => calculateDewPoint(temperature, humidity), [temperature, humidity]);
 
-  const dewPoint = calculateDewPoint(temperature, humidity);
-
-  const wallAssembly = {
+  // Memoize wall assembly object
+  const wallAssembly = useMemo(() => ({
     components,
     studWallType
-  };
+  }), [components, studWallType]);
 
   return (
     <div className="space-y-8">
