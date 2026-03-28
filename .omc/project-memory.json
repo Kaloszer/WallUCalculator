@@ -1,0 +1,275 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1774648878491,
+  "projectRoot": "/home/kaloszer/WallUCalculator",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "15.1.6",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "19.0.0",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "19.0.0",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "bun build",
+    "testCommand": null,
+    "lintCommand": "bun lint",
+    "devCommand": "bun dev",
+    "scripts": {
+      "dev": "next dev --turbopack",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    }
+  },
+  "conventions": {
+    "namingStyle": "camelCase",
+    "importStyle": "ES modules",
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "app",
+      "components",
+      "lib",
+      "public"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "app": {
+      "path": "app",
+      "purpose": "Application code",
+      "fileCount": 4,
+      "lastAccessed": 1774648878486,
+      "keyFiles": [
+        "favicon.ico",
+        "globals.css",
+        "layout.tsx",
+        "page.tsx"
+      ]
+    },
+    "components": {
+      "path": "components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1774648878486,
+      "keyFiles": []
+    },
+    "f": {
+      "path": "f",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1774648878488,
+      "keyFiles": []
+    },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 1,
+      "lastAccessed": 1774648878489,
+      "keyFiles": [
+        "utils.ts"
+      ]
+    },
+    "out": {
+      "path": "out",
+      "purpose": "Build output",
+      "fileCount": 5,
+      "lastAccessed": 1774648878489,
+      "keyFiles": [
+        "404.html",
+        "favicon.ico",
+        "index.html",
+        "index.txt"
+      ]
+    },
+    "plan": {
+      "path": "plan",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1774648878490,
+      "keyFiles": [
+        "plan.md"
+      ]
+    },
+    "playwright-report": {
+      "path": "playwright-report",
+      "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1774648878490,
+      "keyFiles": [
+        "index.html"
+      ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 1,
+      "lastAccessed": 1774648878490,
+      "keyFiles": []
+    },
+    "app/components": {
+      "path": "app/components",
+      "purpose": "UI components",
+      "fileCount": 4,
+      "lastAccessed": 1774648878490,
+      "keyFiles": [
+        "ExplodedWallView.tsx",
+        "ExplodedWallViewClient.tsx",
+        "Footer.tsx"
+      ]
+    },
+    "app/utils": {
+      "path": "app/utils",
+      "purpose": "Utility functions",
+      "fileCount": 2,
+      "lastAccessed": 1774648878490,
+      "keyFiles": [
+        "costCalculator.ts",
+        "smoothScroll.ts"
+      ]
+    },
+    "lib/types": {
+      "path": "lib/types",
+      "purpose": "Type definitions",
+      "fileCount": 1,
+      "lastAccessed": 1774648878490,
+      "keyFiles": [
+        "domain.ts"
+      ]
+    },
+    "lib/utils": {
+      "path": "lib/utils",
+      "purpose": "Utility functions",
+      "fileCount": 2,
+      "lastAccessed": 1774648878491,
+      "keyFiles": [
+        "chartHelpers.ts",
+        "materialHelpers.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "lib/utils/chartHelpers.ts",
+      "accessCount": 17,
+      "lastAccessed": 1774649129652,
+      "type": "file"
+    },
+    {
+      "path": "app/components/calculator/Calculator.tsx",
+      "accessCount": 16,
+      "lastAccessed": 1774680529490,
+      "type": "file"
+    },
+    {
+      "path": "lib/calculations/dewPoint.ts",
+      "accessCount": 12,
+      "lastAccessed": 1774650329195,
+      "type": "file"
+    },
+    {
+      "path": "lib/calculations/temperatureGradient.ts",
+      "accessCount": 12,
+      "lastAccessed": 1774650394920,
+      "type": "file"
+    },
+    {
+      "path": "app/components/calculator/types.ts",
+      "accessCount": 8,
+      "lastAccessed": 1774649034884,
+      "type": "file"
+    },
+    {
+      "path": "app/components/calculator/Calculator.test.tsx",
+      "accessCount": 5,
+      "lastAccessed": 1774680706485,
+      "type": "file"
+    },
+    {
+      "path": "lib/utils/materialHelpers.ts",
+      "accessCount": 3,
+      "lastAccessed": 1774649434432,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 3,
+      "lastAccessed": 1774685553181,
+      "type": "file"
+    },
+    {
+      "path": "lib/__tests__/calculations/rValue.test.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774649975400,
+      "type": "file"
+    },
+    {
+      "path": "lib/__tests__/calculations/dewPoint.test.ts",
+      "accessCount": 2,
+      "lastAccessed": 1774649975493,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 2,
+      "lastAccessed": 1774680605849,
+      "type": "file"
+    },
+    {
+      "path": "lib/types/domain.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774648892544,
+      "type": "file"
+    },
+    {
+      "path": "lib/calculations/rValue.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774648892595,
+      "type": "file"
+    },
+    {
+      "path": "app/components/calculator/components/TemperatureGradientDisplay.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774649873100,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
