@@ -52,8 +52,10 @@ export function HouseVisualization({ wallAssembly }: HouseVisualizationProps) {
       </div>
       <div className="border rounded" style={{ height: "600px" }}>
         <Canvas camera={{ position: [8, 5, 8], fov: 50 }}>
-          <ambientLight intensity={0.5} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
+          <color attach="background" args={["#eef2f6"]} />
+          <hemisphereLight args={["#ffffff", "#b0b8c0", 0.6]} />
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[10, 10, 5]} intensity={1.1} castShadow />
           
           {/* Front gable wall */}
           <WallSection
