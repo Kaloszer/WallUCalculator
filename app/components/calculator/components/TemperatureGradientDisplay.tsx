@@ -30,6 +30,7 @@ import {
   calculateAnnualMoistureAnalysis,
   performGlaserAnalysis,
   generateDefaultMonthlyClimate,
+  assessMouldRisk,
   type AnnualMoistureAnalysis,
   type GlaserAnalysisResult,
   type MonthlyClimateData,
@@ -70,6 +71,10 @@ interface TemperatureGradientDisplayProps {
   insideRH: number;
   outsideRH: number;
   studWallType: StudWallType;
+  /** Real monthly climate normals from the selected location (falls back to a default profile) */
+  monthlyClimate?: MonthlyClimateData[];
+  /** Display name of the location the monthly climate came from */
+  climateLocationName?: string;
 }
 
 // Chart component separated for client-side rendering
@@ -200,6 +205,8 @@ export function TemperatureGradientDisplay({
   insideRH,
   outsideRH,
   studWallType,
+  monthlyClimate,
+  climateLocationName,
 }: TemperatureGradientDisplayProps) {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [dewPointPosition, setDewPointPosition] = useState<number | null>(null);
@@ -257,12 +264,15 @@ export function TemperatureGradientDisplay({
       );
 
       // Perform annual moisture analysis
-      const monthlyClimate = generateDefaultMonthlyClimate();
+      const monthlyClimateData =
+        monthlyClimate && monthlyClimate.length === 12
+          ? monthlyClimate
+          : generateDefaultMonthlyClimate();
       const annualAnalysis = calculateAnnualMoistureAnalysis(
         components,
         insideTemp,
         insideRH,
-        monthlyClimate,
+        monthlyClimateData,
         studWallType
       );
 
@@ -308,14 +318,14 @@ export function TemperatureGradientDisplay({
       setMoistureAnalysis({
         annual: annualAnalysis,
         glaser: glaserResult,
-        monthlyClimate,
+        monthlyClimate: monthlyClimateData,
       });
       setError(null);
     } catch (err) {
       console.error("Error calculating temperature gradient:", err);
       setError(`Failed to calculate temperature gradient: ${err instanceof Error ? err.message : String(err)}`);
     }
-  }, [components, insideTemp, outsideTemp, dewPoint, insideRH, outsideRH, studWallType]);
+  }, [components, insideTemp, outsideTemp, dewPoint, insideRH, outsideRH, studWallType, monthlyClimate]);
 
   // Don't render chart until client-side to prevent hydration issues
   if (!isClient) {
@@ -398,10 +408,34 @@ export function TemperatureGradientDisplay({
 
         <TabsContent value="timeline" className="space-y-4">
           {moistureAnalysis && moistureAnalysis.annual && (
-            <MoistureTimeline
-              monthlyData={moistureAnalysis.annual.monthlyData}
-              materials={components.map(c => c.material)}
-            />
+            <>
+              {(() => {
+                const mould = assessMouldRisk(moistureAnalysis.annual.monthlyData);
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                const styles = {
+                  low: "bg-green-100 text-green-800 border-green-300",
+                  elevated: "bg-yellow-100 text-yellow-800 border-yellow-300",
+                  high: "bg-red-100 text-red-800 border-red-300",
+                } as const;
+                const labels = { low: "Low mould risk", elevated: "Elevated mould risk", high: "High mould risk" } as const;
+                return (
+                  <div className={`flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-sm ${styles[mould.level]}`}>
+                    <span className="font-semibold">{labels[mould.level]}</span>
+                    <span>· peak surface RH {mould.maxSurfaceRH}% in {monthNames[mould.worstMonth]}</span>
+                    {mould.monthsAtRisk > 0 && <span>· {mould.monthsAtRisk} month(s) above the 80% threshold</span>}
+                  </div>
+                );
+              })()}
+              <p className="text-xs text-muted-foreground">
+                {monthlyClimate && monthlyClimate.length === 12 && climateLocationName
+                  ? `Annual analysis uses real climate normals for ${climateLocationName}.`
+                  : "Annual analysis uses a default temperate climate — select a location in the Climate tab for local data."}
+              </p>
+              <MoistureTimeline
+                monthlyData={moistureAnalysis.annual.monthlyData}
+                materials={components.map(c => c.material)}
+              />
+            </>
           )}
         </TabsContent>
 

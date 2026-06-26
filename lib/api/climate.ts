@@ -25,6 +25,16 @@ interface OpenMeteoResponse {
   daily: OpenMeteoDailyData;
 }
 
+/** Monthly climate normal derived from the historical daily series */
+export interface MonthlyNormal {
+  /** Month index (0 = January) */
+  month: number;
+  /** Mean outdoor temperature for the month in Celsius */
+  avgTemp: number;
+  /** Mean outdoor relative humidity for the month in percentage */
+  avgHumidity: number;
+}
+
 /** Climate data result */
 export interface ClimateDataResult {
   /** Latitude */
@@ -33,6 +43,8 @@ export interface ClimateDataResult {
   lon: number;
   /** Climate zone */
   climateZone: string;
+  /** 12 monthly normals (Jan–Dec) derived from the historical daily series */
+  monthly?: MonthlyNormal[];
   /** Heating degree days base 18°C */
   hdd18: number;
   /** Cooling degree days base 18°C */
@@ -82,9 +94,10 @@ export async function getClimateData(lat: number, lon: number): Promise<ClimateD
 
 /** Fetch climate data from Open-Meteo using the past year of historical data. */
 async function fetchClimateDataFromAPI(lat: number, lon: number): Promise<ClimateDataResult> {
+  // Use 3 years of history so monthly normals are stable (still a single request).
   const endDate = new Date();
   const startDate = new Date();
-  startDate.setFullYear(startDate.getFullYear() - 1);
+  startDate.setFullYear(startDate.getFullYear() - 3);
 
   const startDateStr = startDate.toISOString().split('T')[0];
   const endDateStr = endDate.toISOString().split('T')[0];
@@ -124,6 +137,11 @@ function calculateClimateMetrics(daily: OpenMeteoDailyData) {
   const minTemps: number[] = [];
   const maxTemps: number[] = [];
 
+  // Per-month accumulators for monthly normals (index 0 = January).
+  const monthTempSum = new Array(12).fill(0);
+  const monthHumiditySum = new Array(12).fill(0);
+  const monthCount = new Array(12).fill(0);
+
   for (let i = 0; i < daily.time.length; i++) {
     const avgTemp = daily.temperature_2m_mean[i];
     const humidity = daily.relative_humidity_2m_mean[i];
@@ -138,7 +156,21 @@ function calculateClimateMetrics(daily: OpenMeteoDailyData) {
     humiditySum += humidity;
     minTemps.push(daily.temperature_2m_min[i]);
     maxTemps.push(daily.temperature_2m_max[i]);
+
+    // daily.time[i] is an ISO date "YYYY-MM-DD"
+    const monthIndex = Number(daily.time[i].slice(5, 7)) - 1;
+    if (monthIndex >= 0 && monthIndex < 12) {
+      monthTempSum[monthIndex] += avgTemp;
+      monthHumiditySum[monthIndex] += humidity;
+      monthCount[monthIndex] += 1;
+    }
   }
+
+  const monthly: MonthlyNormal[] = Array.from({ length: 12 }, (_, m) => ({
+    month: m,
+    avgTemp: monthCount[m] ? Math.round((monthTempSum[m] / monthCount[m]) * 10) / 10 : 0,
+    avgHumidity: monthCount[m] ? Math.round(monthHumiditySum[m] / monthCount[m]) : 0,
+  }));
 
   minTemps.sort((a, b) => a - b);
   maxTemps.sort((a, b) => a - b);
@@ -146,14 +178,17 @@ function calculateClimateMetrics(daily: OpenMeteoDailyData) {
   const winterDesignTemp = minTemps[Math.floor(minTemps.length * 0.01)];
   const summerDesignTemp = maxTemps[Math.floor(maxTemps.length * 0.99)];
   const count = daily.time.length;
+  // Normalize cumulative degree-days to a per-year figure (window may span multiple years).
+  const years = Math.max(count / 365.25, 1 / 365.25);
 
   return {
-    hdd18: Math.round(hdd18Sum),
-    cdd18: Math.round(cdd18Sum),
+    hdd18: Math.round(hdd18Sum / years),
+    cdd18: Math.round(cdd18Sum / years),
     winterDesignTemp: Math.round(winterDesignTemp * 10) / 10,
     summerDesignTemp: Math.round(summerDesignTemp * 10) / 10,
     avgTemp: Math.round((tempSum / count) * 10) / 10,
     avgHumidity: Math.round(humiditySum / count),
+    monthly,
   };
 }
 

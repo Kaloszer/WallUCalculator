@@ -385,6 +385,64 @@ function determineCondensationRisk(
 }
 
 /**
+ * Mould-growth risk assessment (ISO 13788-style surface-humidity criterion)
+ */
+export interface MouldRiskResult {
+  /** Overall risk level */
+  level: 'low' | 'elevated' | 'high';
+  /** Highest relative humidity reached at any layer across the year (%, capped at 100) */
+  maxSurfaceRH: number;
+  /** Month index (0 = January) of the worst case */
+  worstMonth: number;
+  /** Number of months where a layer exceeds the 80% mould threshold */
+  monthsAtRisk: number;
+}
+
+/**
+ * Assess mould-growth risk from an annual moisture analysis.
+ *
+ * Mould can grow well before liquid condensation: ISO 13788 flags sustained
+ * surface relative humidity above 80%. For each month we take the highest layer
+ * RH (= vapour pressure / saturation pressure) and classify the worst case.
+ *
+ * @param monthlyData - Per-month moisture analysis (from calculateAnnualMoistureAnalysis)
+ * @returns Mould risk result
+ */
+export function assessMouldRisk(monthlyData: MonthlyMoistureAnalysis[]): MouldRiskResult {
+  let maxSurfaceRH = 0;
+  let worstMonth = 0;
+  let monthsAtRisk = 0;
+  let anyCondensation = false;
+
+  for (const month of monthlyData) {
+    let monthMaxRH = 0;
+    for (const layer of month.layerData) {
+      if (layer.saturationPressure > 0) {
+        const rh = (layer.vaporPressure / layer.saturationPressure) * 100;
+        if (rh > monthMaxRH) monthMaxRH = rh;
+      }
+      if (layer.hasCondensation) anyCondensation = true;
+    }
+    if (monthMaxRH > maxSurfaceRH) {
+      maxSurfaceRH = monthMaxRH;
+      worstMonth = month.month;
+    }
+    if (monthMaxRH > 80) monthsAtRisk++;
+  }
+
+  let level: MouldRiskResult['level'] = 'low';
+  if (anyCondensation || maxSurfaceRH >= 100) level = 'high';
+  else if (maxSurfaceRH >= 80) level = 'elevated';
+
+  return {
+    level,
+    maxSurfaceRH: Math.min(Math.round(maxSurfaceRH), 100),
+    worstMonth,
+    monthsAtRisk,
+  };
+}
+
+/**
  * Generate default monthly climate data for temperate climate
  *
  * @returns Array of 12 months of climate data

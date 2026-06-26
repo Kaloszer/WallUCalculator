@@ -21,6 +21,7 @@ import { calculateTotalRValue } from "@/lib/calculations/rValue"
 import { calculateThermalPerformance } from "@/lib/calculations/cost"
 import { DewPointDisplay } from "./components/DewPointDisplay"
 import { TemperatureGradientDisplay } from "./components/TemperatureGradientDisplay"
+import { SensitivitySweep } from "./components/SensitivitySweep"
 import MaterialDatabase from "@/app/components/material-database/MaterialDatabase"
 import { LocationSelector } from "@/app/components/climate/LocationSelector"
 import { ClimateDisplay } from "@/app/components/climate/ClimateDisplay"
@@ -29,6 +30,8 @@ import ComparisonView from "@/app/components/comparison/ComparisonView"
 import { ExportDialog } from "@/app/components/reporting/ExportDialog"
 import { ReportGenerator } from "@/app/components/reporting/ReportGenerator"
 import { ClimateZone, DEFAULT_CLIMATE_ZONE, CLIMATE_ZONE_DESCRIPTIONS } from "@/lib/data/buildingCodes"
+import type { ClimateDataResult } from "@/lib/api/climate"
+import type { MonthlyClimateData } from "@/lib/calculations/moisture"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Link from "next/link"
 
@@ -88,7 +91,19 @@ export default function Calculator() {
 
   // State for new features
   const [selectedLocation, setSelectedLocation] = useState<{lat: number; lon: number; displayName: string; city?: string; country?: string; region?: string} | null>(null);
+  const [climateResult, setClimateResult] = useState<ClimateDataResult | null>(null);
   const [climateZone, setClimateZone] = useState<ClimateZone>(DEFAULT_CLIMATE_ZONE);
+
+  // Real monthly climate normals (from the selected location) for the annual
+  // moisture analysis; undefined falls back to a default temperate profile.
+  const monthlyClimate = useMemo<MonthlyClimateData[] | undefined>(() => {
+    if (!climateResult?.monthly?.length) return undefined;
+    return climateResult.monthly.map((m) => ({
+      month: m.month,
+      temperature: m.avgTemp,
+      relativeHumidity: m.avgHumidity,
+    }));
+  }, [climateResult]);
   const [showExportDialog, setShowExportDialog] = useState(false);
   const [showReportGenerator, setShowReportGenerator] = useState(false);
 
@@ -214,6 +229,7 @@ export default function Calculator() {
               lat={selectedLocation?.lat ?? NaN}
               lon={selectedLocation?.lon ?? NaN}
               locationName={selectedLocation?.displayName}
+              onClimateData={setClimateResult}
             />
           </div>
         </TabsContent>
@@ -251,7 +267,19 @@ export default function Calculator() {
                   insideRH={insideRH}
                   outsideRH={outsideRH}
                   studWallType={studWallType}
+                  monthlyClimate={monthlyClimate}
+                  climateLocationName={selectedLocation?.displayName}
                 />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Insulation Sensitivity</CardTitle>
+                <CardDescription>How the U-value responds to insulation thickness — find the point of diminishing returns</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SensitivitySweep components={components} studWallConfig={studWallConfig} />
               </CardContent>
             </Card>
           </div>

@@ -26,6 +26,8 @@ interface ClimateDisplayProps {
   loading?: boolean;
   /** Error message */
   error?: string | null;
+  /** Called when climate data is successfully fetched (lifts it to the parent) */
+  onClimateData?: (data: ClimateDataResult) => void;
 }
 
 export function ClimateDisplay({
@@ -33,7 +35,8 @@ export function ClimateDisplay({
   lon,
   locationName,
   loading = false,
-  error = null
+  error = null,
+  onClimateData,
 }: ClimateDisplayProps) {
   const [climateData, setClimateData] = useState<ClimateDataResult | null>(null);
   const [dataLoading, setDataLoading] = useState(false);
@@ -46,6 +49,7 @@ export function ClimateDisplay({
       try {
         const data = await getClimateData(lat, lon);
         setClimateData(data);
+        onClimateData?.(data);
       } catch (err) {
         console.error('Failed to fetch climate data:', err);
       } finally {
@@ -54,7 +58,7 @@ export function ClimateDisplay({
     };
 
     fetchClimateData();
-  }, [lat, lon]);
+  }, [lat, lon, onClimateData]);
 
   if (loading || dataLoading) {
     return (
