@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { ExtendedMaterial } from '@/lib/constants/defaultMaterials';
+import {
+  loadMaterials as loadMaterialsFromStore,
+  saveMaterial,
+  deleteMaterialById,
+  importMaterials as importMaterialsToStore,
+  exportMaterials,
+} from '@/lib/storage/materialsClient';
 import MaterialSearch from './MaterialSearch';
 import MaterialList from './MaterialList';
 import MaterialForm from './MaterialForm';
@@ -25,9 +32,7 @@ export default function MaterialDatabase() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch('/api/materials/');
-      if (!response.ok) throw new Error('Failed to load materials');
-      const data = await response.json();
+      const data = loadMaterialsFromStore();
       setMaterials(data);
       setFilteredMaterials(data);
     } catch (err) {
@@ -84,11 +89,7 @@ export default function MaterialDatabase() {
     if (!confirm('Are you sure you want to delete this material?')) return;
 
     try {
-      const response = await fetch(`/api/materials/?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) throw new Error('Failed to delete material');
+      if (!deleteMaterialById(id)) throw new Error('Material not found');
 
       showNotification('success', 'Material deleted successfully');
       await loadMaterials();
@@ -99,16 +100,7 @@ export default function MaterialDatabase() {
 
   const handleSave = async (material: MaterialFormData) => {
     try {
-      const response = await fetch('/api/materials/', {
-        method: selectedMaterial ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(material),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to save material');
-      }
+      saveMaterial(material, !!selectedMaterial);
 
       showNotification('success', selectedMaterial ? 'Material updated successfully' : 'Material added successfully');
       setIsFormOpen(false);
@@ -124,16 +116,7 @@ export default function MaterialDatabase() {
       const text = await file.text();
       const data = JSON.parse(text);
 
-      const response = await fetch('/api/materials/import/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ materials: data.materials || data, mergeStrategy }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to import materials');
-      }
+      importMaterialsToStore(data.materials || data, mergeStrategy);
 
       showNotification('success', `Materials imported successfully`);
       await loadMaterials();
@@ -145,14 +128,7 @@ export default function MaterialDatabase() {
 
   const handleExport = async (selectedIds?: string[]) => {
     try {
-      const url = selectedIds
-        ? `/api/materials/export?format=json&ids=${selectedIds.join(',')}`
-        : '/api/materials/export?format=json';
-
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('Failed to export materials');
-
-      const data = await response.json();
+      const data = exportMaterials(selectedIds);
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const urlObj = URL.createObjectURL(blob);
       const a = document.createElement('a');

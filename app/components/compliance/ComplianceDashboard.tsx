@@ -17,6 +17,7 @@ import {
   DEFAULT_BUILDING_CODE,
   DEFAULT_CLIMATE_ZONE,
 } from '@/lib/data/buildingCodes';
+import { checkMultipleCompliance } from '@/lib/calculations/compliance';
 
 interface ComplianceDashboardProps {
   /** Wall components to check */
@@ -142,24 +143,14 @@ export function ComplianceDashboard({
     setError(null);
 
     try {
-      const response = await fetch('/api/compliance/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          components,
-          studWallConfig,
-          codes: codesToCheck,
-          zone: climateZone,
-          componentType: 'opaque_walls',
-        }),
-      });
+      const data = checkMultipleCompliance(
+        components,
+        studWallConfig,
+        codesToCheck,
+        climateZone as unknown as BuildingCodeClimateZone,
+        'opaque_walls'
+      ) as unknown as ComplianceResultData[];
 
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || `Compliance check failed: ${response.status}`);
-      }
-
-      const data: ComplianceResultData[] = await response.json();
       const convertedResults = data.map(convertToDisplayResult);
       setResults(convertedResults);
       setHasRun(true);

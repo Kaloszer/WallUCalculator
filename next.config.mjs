@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Fully static SPA: client-side data (lib/storage + lib/api), no server runtime.
+  output: 'export',
   images: {
     unoptimized: true,
     remotePatterns: [

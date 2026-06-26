@@ -5,7 +5,7 @@
  * and energy-related metrics based on location data.
  */
 
-import { ClimateDataResult } from '@/app/api/location/climate/route';
+import { ClimateDataResult } from '@/lib/api/climate';
 import { getClimateZone, ClimateZoneConfig, ClimateZoneType } from '@/lib/constants/climateZones';
 
 /**

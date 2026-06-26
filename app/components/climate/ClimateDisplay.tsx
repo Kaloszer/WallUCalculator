@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import { Thermometer, Snowflake, Sun, Droplets, Zap, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ClimateDataResult } from '@/app/api/location/climate/route';
+import { ClimateDataResult, getClimateData } from '@/lib/api/climate';
 import { getClimateZone } from '@/lib/constants/climateZones';
 import { getClimateSeverity } from '@/lib/calculations/climate';
 
@@ -44,11 +44,8 @@ export function ClimateDisplay({
     const fetchClimateData = async () => {
       setDataLoading(true);
       try {
-        const response = await fetch(`/api/location/climate/?lat=${lat}&lon=${lon}`);
-        if (response.ok) {
-          const data = await response.json();
-          setClimateData(data);
-        }
+        const data = await getClimateData(lat, lon);
+        setClimateData(data);
       } catch (err) {
         console.error('Failed to fetch climate data:', err);
       } finally {

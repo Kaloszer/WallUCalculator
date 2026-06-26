@@ -24,9 +24,6 @@ jobs:
       - name: Use Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Create out directory
-        run: mkdir out
-
       - name: Install, build, and upload your site
         env:
           NODE_ENV: production

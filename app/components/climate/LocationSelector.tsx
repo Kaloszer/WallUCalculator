@@ -13,26 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
-/**
- * Geocoding result from API
- */
-interface GeocodeResult {
-  displayName: string;
-  lat: number;
-  lon: number;
-  city?: string;
-  country?: string;
-  region?: string;
-}
-
-/**
- * API response type
- */
-interface GeocodeResponse {
-  results: GeocodeResult[];
-  error?: string;
-}
+import { geocodeAddress, GeocodeResult } from '@/lib/api/geocode';
 
 interface LocationSelectorProps {
   /** Callback when location is selected */
@@ -79,20 +60,8 @@ export function LocationSelector({
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/location/geocode/?q=${encodeURIComponent(searchQuery)}&limit=5`);
-
-      if (!response.ok) {
-        throw new Error('Failed to search location');
-      }
-
-      const data: GeocodeResponse = await response.json();
-
-      if (data.error) {
-        setError(data.error);
-        setResults([]);
-      } else {
-        setResults(data.results || []);
-      }
+      const results = await geocodeAddress(searchQuery, 5);
+      setResults(results);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to search location');
       setResults([]);
