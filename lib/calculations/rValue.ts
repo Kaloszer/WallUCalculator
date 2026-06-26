@@ -26,7 +26,7 @@ import { MM_TO_M } from '../constants/calculations';
  * }, studConfig);
  */
 export function calculateComponentRValue(
-  component: WallComponent,
+  component: WallComponent | Omit<WallComponent, 'id'>,
   studWallConfig?: StudWallConfig
 ): number {
   // Handle stud layers using parallel path method
@@ -54,7 +54,7 @@ export function calculateComponentRValue(
  * Formula: R_eff = 1 / (area_stud * (1/R_stud) + area_cavity * (1/R_cavity))
  */
 function calculateStudLayerRValue(
-  component: WallComponent,
+  component: WallComponent | Omit<WallComponent, 'id'>,
   studConfig: StudWallConfig
 ): number {
   const thicknessM = component.thickness * MM_TO_M;
@@ -87,7 +87,7 @@ function calculateStudLayerRValue(
  * @returns Total R-value in m²K/W
  */
 export function calculateTotalRValue(
-  components: WallComponent[],
+  components: Array<WallComponent | Omit<WallComponent, 'id'>>,
   studWallConfig?: StudWallConfig,
   includeAirFilms: boolean = true
 ): number {

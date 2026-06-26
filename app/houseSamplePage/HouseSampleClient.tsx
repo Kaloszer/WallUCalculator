@@ -1,20 +1,23 @@
 "use client"
 import { useSearchParams } from "next/navigation"
 import { HouseVisualization } from "@/app/components/house-sample/HouseVisualization"
+import { exampleWalls } from "@/app/components/calculator/types"
+
+// Default to a realistic example assembly so the standalone demo route shows a
+// complete house (walls + roof) when opened without a ?wallAssembly= payload.
+const defaultWallAssembly = {
+  components: exampleWalls[0].components.map((component, index) => ({ ...component, id: index })),
+  studWallType: exampleWalls[0].studWallType,
+}
 
 export default function HouseSampleClient() {
   const searchParams = useSearchParams()
-  let wallAssembly = {
-    components: [],
-    studWallType: "none"
-  }
+  let wallAssembly = defaultWallAssembly
 
   try {
-    if (searchParams) {
-      const wallAssemblyData = searchParams.get("wallAssembly")
-      if (wallAssemblyData) {
-        wallAssembly = JSON.parse(wallAssemblyData)
-      }
+    const wallAssemblyData = searchParams?.get("wallAssembly")
+    if (wallAssemblyData) {
+      wallAssembly = JSON.parse(wallAssemblyData)
     }
   } catch (error) {
     console.error("Error parsing wall assembly data:", error)

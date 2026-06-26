@@ -39,6 +39,12 @@ export function calculateVaporPressureGradient(
   const totalResistance = components.reduce((sum, comp) => sum + (comp.vaporResistance || 1) * (comp.thickness / 1000), 0);
   const pInside = saturationPressures[0] * (insideRH / 100);
   const pOutside = saturationPressures[saturationPressures.length - 1] * (outsideRH / 100);
+
+  // Handle edge case where totalResistance is 0 to avoid division by zero
+  if (totalResistance === 0) {
+    return components.map(() => pInside);
+  }
+
   const pressures = [pInside];
   let currentResistance = 0;
 

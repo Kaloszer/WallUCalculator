@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import { WallComponent, StudWallType, studWallConfigs, StudWallConfig, ExampleWall } from '../types';
 
 interface WallCalculatorContextType {
@@ -72,7 +72,7 @@ export function WallCalculatorProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const getStudConfig = () => {
+  const getStudConfig = useCallback(() => {
     const baseConfig = studWallConfigs[studWallType];
     if (studWallType === 'i-joist') {
       return {
@@ -81,7 +81,7 @@ export function WallCalculatorProvider({ children }: { children: ReactNode }) {
       };
     }
     return baseConfig;
-  };
+  }, [studWallType, iJoistDepth]);
 
   const loadExampleWall = (example: ExampleWall) => {
     setComponents(example.components.map((comp, index) => ({

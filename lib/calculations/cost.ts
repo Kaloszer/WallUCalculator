@@ -16,7 +16,7 @@ import { getMaterialByName } from '../constants/materials';
  *
  * Formula: Cost = cost_per_mm_per_m² × thickness_mm
  */
-export function calculateComponentCost(component: WallComponent): number {
+export function calculateComponentCost(component: WallComponent | Omit<WallComponent, 'id'>): number {
   const material = getMaterialByName(component.material);
   if (!material) return 0;
 
@@ -29,7 +29,7 @@ export function calculateComponentCost(component: WallComponent): number {
  * @param components - Array of wall components
  * @returns Total cost per square meter
  */
-export function calculateTotalCost(components: WallComponent[]): number {
+export function calculateTotalCost(components: Array<WallComponent | Omit<WallComponent, 'id'>>): number {
   return components.reduce((sum, comp) => sum + calculateComponentCost(comp), 0);
 }
 

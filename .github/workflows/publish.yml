@@ -24,13 +24,10 @@ jobs:
       - name: Use Bun
         uses: oven-sh/setup-bun@v1
 
-      - name: Create out directory
-        run: mkdir out
-
-      - name: Install, build, and upload your site
+      - name: Install, typecheck, test, build, and upload your site
         env:
           NODE_ENV: production
-        run: bun install && bun run build
+        run: bun install && bun run typecheck && bun run lint && bunx vitest run && bun run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

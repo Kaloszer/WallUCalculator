@@ -37,3 +37,6 @@ next-env.d.ts
 
 # storybook
 feature.md
+# use bun, not npm
+package-lock.json
+tsconfig.tsbuildinfo
