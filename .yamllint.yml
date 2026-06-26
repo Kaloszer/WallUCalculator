@@ -1,0 +1,11 @@
+---
+extends: default
+rules:
+  # GitHub Actions workflows don't use "---" and rely on the `on:` key.
+  document-start: disable
+  truthy:
+    check-keys: false
+    allowed-values: ["true", "false"]
+  line-length: disable
+  comments:
+    min-spaces-from-content: 1
