@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    // Return file as response
-    return new NextResponse(fileContent, {
+    // Return file as response (Buffer → Uint8Array for a valid BodyInit)
+    return new NextResponse(Buffer.isBuffer(fileContent) ? new Uint8Array(fileContent) : fileContent, {
       headers: {
         'Content-Type': mimeType,
         'Content-Disposition': `attachment; filename="${filename}"`,

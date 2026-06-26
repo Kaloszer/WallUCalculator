@@ -39,3 +39,4 @@ next-env.d.ts
 feature.md
 # use bun, not npm
 package-lock.json
+tsconfig.tsbuildinfo
