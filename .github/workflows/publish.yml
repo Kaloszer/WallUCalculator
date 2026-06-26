@@ -27,7 +27,7 @@ jobs:
       - name: Install, typecheck, test, build, and upload your site
         env:
           NODE_ENV: production
-        run: bun install && bun run typecheck && bunx vitest run && bun run build
+        run: bun install && bun run typecheck && bun run lint && bunx vitest run && bun run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

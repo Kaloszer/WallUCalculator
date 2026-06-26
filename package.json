@@ -6,7 +6,7 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "typecheck": "node_modules/typescript-7/bin/tsc --noEmit",
     "typecheck:stable": "tsc --noEmit"
   },
@@ -44,7 +44,7 @@
     "leaflet": "^1.9.4",
     "lucide-react": "^0.453.0",
     "lz-string": "^1.5.0",
-    "next": "^15.1.6",
+    "next": "~15.5",
     "react": "^19.2.0",
     "react-chartjs-2": "^5.3.1",
     "react-dom": "^19.2.0",
@@ -59,7 +59,8 @@
     "three-stdlib": "2.36.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
+    "@eslint/eslintrc": "^3.3.5",
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
@@ -68,16 +69,14 @@
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "bun-plugin-html": "^2.2.8",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^15.1.6",
+    "eslint": "^9",
+    "eslint-config-next": "~15.5",
     "postcss": "^8.5.15",
     "repomix": "^1.15.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^6.0.0",
     "typescript-7": "npm:typescript@7.0.1-rc",
+    "typescript-eslint": "^8.62.0",
     "vitest": "^4.1.2"
-  },
-  "trustedDependencies": [
-    "@biomejs/biome"
-  ]
+  }
 }
