@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Github } from "lucide-react"
+import { GithubIcon } from "@/app/components/icons/BrandIcons"
 import { Button } from "@/components/ui/button"
 
 interface HeaderProps {
@@ -48,7 +48,7 @@ export default function Header({ showTitle = true }: HeaderProps) {
             rel="noopener noreferrer"
             className="text-slate-600 hover:text-slate-900"
           >
-            <Github className="h-4 w-4" />
+            <GithubIcon className="h-4 w-4" />
             GitHub
           </a>
         </Button>

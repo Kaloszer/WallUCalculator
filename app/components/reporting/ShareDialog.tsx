@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Share2, Link as LinkIcon, Copy, Check, Twitter, Facebook, Linkedin, Mail } from 'lucide-react';
+import { Share2, Link as LinkIcon, Copy, Check, Mail } from 'lucide-react';
+import { TwitterIcon, FacebookIcon, LinkedinIcon } from '@/app/components/icons/BrandIcons';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -194,7 +195,7 @@ export function ShareDialog({
                 variant="outline"
                 className="h-auto py-6"
               >
-                <Twitter className="h-6 w-6 text-blue-400" />
+                <TwitterIcon className="h-6 w-6 text-blue-400" />
                 <div className="ml-3 text-left">
                   <div className="font-semibold">Twitter</div>
                   <div className="text-xs text-muted-foreground">Share via tweet</div>
@@ -206,7 +207,7 @@ export function ShareDialog({
                 variant="outline"
                 className="h-auto py-6"
               >
-                <Facebook className="h-6 w-6 text-blue-600" />
+                <FacebookIcon className="h-6 w-6 text-blue-600" />
                 <div className="ml-3 text-left">
                   <div className="font-semibold">Facebook</div>
                   <div className="text-xs text-muted-foreground">Share on timeline</div>
@@ -218,7 +219,7 @@ export function ShareDialog({
                 variant="outline"
                 className="h-auto py-6"
               >
-                <Linkedin className="h-6 w-6 text-blue-700" />
+                <LinkedinIcon className="h-6 w-6 text-blue-700" />
                 <div className="ml-3 text-left">
                   <div className="font-semibold">LinkedIn</div>
                   <div className="text-xs text-muted-foreground">Share professionally</div>
