@@ -16,7 +16,7 @@ A web-based calculator application for computing thermal transmittance (U-value)
 
 The project is organized with a domain-driven design pattern separating business logic from UI components:
 
-```
+```text
 WallUCalculator/
 ├── app/                      # Next.js App Router directory (UI layer)
 │   ├── components/         # React components
@@ -122,7 +122,7 @@ bun test
 
 ## Navigate to GitHub Pages
 
-https://kaloszer.github.io/WallUCalculator/
+<https://kaloszer.github.io/WallUCalculator/>
 
 ## Testing
 
@@ -133,6 +133,7 @@ bun test
 ```
 
 Tests are located in `lib/__tests__/calculations/` and cover:
+
 - R-value calculations
 - Dew point calculations
 - U-value conversions

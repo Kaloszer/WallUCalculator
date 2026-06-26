@@ -1,0 +1,25 @@
+# MegaLinter config — https://megalinter.io/latest/config-file/
+APPLY_FIXES: none
+SHOW_ELAPSED_TIME: true
+FILEIO_REPORTER: false
+# Lint only PR-changed files (set in workflow); fail the check on any error.
+DISABLE_ERRORS: false
+# ESLint/typecheck/tests are owned by the project's own ESLint 9 flat config
+# (run via `bun run lint` in publish.yml); MegaLinter's bundled ESLint 8 can't
+# read the flat config, so it's intentionally not enabled here.
+ENABLE_LINTERS:
+  - JSON_JSONLINT
+  - YAML_YAMLLINT
+  - MARKDOWN_MARKDOWNLINT
+  - DOCKERFILE_HADOLINT
+  - REPOSITORY_GITLEAKS
+  - REPOSITORY_TRIVY
+EXCLUDED_DIRECTORIES:
+  - node_modules
+  - .next
+  - out
+  - .git
+  - .omc
+  - plan
+  - playwright-report
+  - public
