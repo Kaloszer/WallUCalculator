@@ -2,7 +2,7 @@
 
 > **Goal:** Modernize the dependency stack and toolchain to current bleeding-edge (June 2026): **full shadcn/ui on Tailwind v4**, **TypeScript 7 (RC) as the primary typechecker**, the **three.js stack realigned off its alpha pin**, **lucide v1**, and the security/hygiene fixes — while preserving app behavior.
 >
-> **Status:** Ready to implement. Use this file as the implementation goal.
+> **Status:** ✅ IMPLEMENTED (all phases 0–4) on branch `modernization`. Verified live in a browser against the static `out/` export: styling (Tailwind v4 + shadcn v4), materials localStorage store (25 materials), Nominatim geocode, open-meteo climate, and the three.js 3D view all work with zero console errors. Static gates green throughout: TS7 `tsc --noEmit`, ESLint 9, vitest 11/11, `next build` static export. Phase 5 (Next 16 / TS7 GA cutover) remains deferred as designed.
 > **Research method:** Versions pulled live from the npm registry (`npm outdated` / `npm view`, not training data) and breaking-change analysis cross-checked via Exa web search against official sources (June 2026). Dated source URLs are in §8.
 
 ---
