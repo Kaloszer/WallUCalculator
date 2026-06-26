@@ -52,7 +52,7 @@ export default function MaterialList({ materials, onEdit, onDelete, onExport }: 
 
   if (materials.length === 0) {
     return (
-      <div className="bg-white p-12 rounded-lg shadow-sm border border-gray-200 text-center">
+      <div className="bg-white p-12 rounded-lg shadow-xs border border-gray-200 text-center">
         <svg
           className="mx-auto h-16 w-16 text-gray-400 mb-4"
           fill="none"
@@ -127,7 +127,7 @@ export default function MaterialList({ materials, onEdit, onDelete, onExport }: 
       {Object.entries(groupedMaterials).map(([type, typeMaterials]) => {
         const typeInfo = materialTypes.find(t => t.value === type);
         return (
-          <div key={type} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+          <div key={type} className="bg-white rounded-lg shadow-xs border border-gray-200 overflow-hidden">
             <div className="px-6 py-3 bg-gray-50 border-b border-gray-200 flex items-center gap-2">
               <span className="text-2xl">{typeInfo?.icon}</span>
               <h3 className="text-lg font-semibold text-gray-900">{typeInfo?.label || type}</h3>

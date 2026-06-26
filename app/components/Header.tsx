@@ -8,7 +8,7 @@ interface HeaderProps {
 
 export default function Header({ showTitle = true }: HeaderProps) {
   return (
-    <header className="py-6 px-8 flex items-center border-b bg-white/50 backdrop-blur-sm sticky top-0 z-50">
+    <header className="py-6 px-8 flex items-center border-b bg-white/50 backdrop-blur-xs sticky top-0 z-50">
       <nav className="flex gap-6 items-center mr-12">
         <Link 
           href="/" 
@@ -26,7 +26,7 @@ export default function Header({ showTitle = true }: HeaderProps) {
       {showTitle && (
         <div className="flex-1">
           <Link href="/" className="no-underline">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-blue-600 to-sky-500 bg-clip-text text-transparent">
               Wall U-Value Calculator
             </h1>
             <p className="text-sm text-slate-600">

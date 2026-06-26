@@ -273,7 +273,7 @@ export default function ExplodedWallViewClient({ onNavigate }: ExplodedWallViewP
       </Canvas>
       <button
         onClick={handleClick}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 bg-gradient-to-r from-blue-600 to-sky-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-3 bg-linear-to-r from-blue-600 to-sky-500 text-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 font-semibold"
       >
         Go to Calculator
       </button>

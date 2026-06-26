@@ -316,10 +316,10 @@ export default function Calculator() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="p-4 bg-white rounded-lg shadow-sm">
+                  <div className="p-4 bg-white rounded-lg shadow-xs">
                     <WallVisualization components={components} />
                   </div>
-                  <div className="p-4 bg-white rounded-lg shadow-sm">
+                  <div className="p-4 bg-white rounded-lg shadow-xs">
                     <WallVisualization3D
                       components={components}
                       studWallConfig={studWallConfig}

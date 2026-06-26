@@ -255,7 +255,7 @@ export function CodeSelector({
 
         {/* Help Text */}
         <div className="flex items-start gap-2 text-sm text-muted-foreground">
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
           <p>
             Different standards have varying requirements based on climate zone and building type.
             Make sure to select the correct parameters for accurate compliance checking.

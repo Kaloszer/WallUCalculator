@@ -110,7 +110,7 @@ function ViolationRow({ violation }: { violation: ViolationWithStandard }) {
             <div className={`p-4 space-y-4 ${config.bgColor} border-t ${config.borderColor}`}>
               {/* Type */}
               <div className="flex items-start gap-2">
-                <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <Info className="h-4 w-4 mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-medium">Violation Type</p>
                   <p className="text-sm capitalize">{violation.type.replace('_', ' ')}</p>
@@ -120,7 +120,7 @@ function ViolationRow({ violation }: { violation: ViolationWithStandard }) {
               {/* Code Reference */}
               {violation.codeReference && (
                 <div className="flex items-start gap-2">
-                  <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <BookOpen className="h-4 w-4 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium">Code Reference</p>
                     <p className="text-sm">{violation.codeReference}</p>
@@ -131,7 +131,7 @@ function ViolationRow({ violation }: { violation: ViolationWithStandard }) {
               {/* Suggestion */}
               {violation.suggestion && (
                 <div className="flex items-start gap-2">
-                  <Lightbulb className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <Lightbulb className="h-4 w-4 mt-0.5 shrink-0" />
                   <div>
                     <p className="text-sm font-medium">Recommendation</p>
                     <p className="text-sm">{violation.suggestion}</p>

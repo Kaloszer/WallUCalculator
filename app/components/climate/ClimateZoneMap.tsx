@@ -87,7 +87,7 @@ function ClimateZoneLegend() {
         {Object.values(CLIMATE_ZONES).map((zone) => (
           <div key={zone.zone} className="flex items-center gap-2">
             <div
-              className="w-4 h-4 rounded flex-shrink-0"
+              className="w-4 h-4 rounded shrink-0"
               style={{ backgroundColor: zone.color }}
             />
             <div className="text-xs">

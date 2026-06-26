@@ -80,7 +80,7 @@ export default function MaterialSearch({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+    <div className="bg-white p-6 rounded-lg shadow-xs border border-gray-200">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">

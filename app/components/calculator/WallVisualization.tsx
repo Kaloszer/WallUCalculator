@@ -91,7 +91,7 @@ export function WallVisualization({ components }: WallVisualizationProps) {
         </div>
       </div>
 
-      <div className="border rounded-lg bg-white/50 backdrop-blur-sm p-4">
+      <div className="border rounded-lg bg-white/50 backdrop-blur-xs p-4">
         <h3 className="font-semibold text-lg mb-3">Wall Performance Summary</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="space-y-1">

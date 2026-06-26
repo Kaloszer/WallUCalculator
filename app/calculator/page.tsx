@@ -11,7 +11,7 @@ const Calculator = dynamic(
 
 export default function CalculatorPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-linear-to-b from-slate-50 to-slate-100">
       <Header showTitle={true} />
       <div className="container mx-auto px-4 py-6">
         <div className="max-w-7xl mx-auto">

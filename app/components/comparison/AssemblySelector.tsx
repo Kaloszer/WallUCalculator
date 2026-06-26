@@ -115,7 +115,7 @@ export function AssemblySelector({ selectedIds, onAssemblySelect }: AssemblySele
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-semibold truncate">{assembly.name}</h4>
                         {isSelected(assembly.id) && (
-                          <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                          <Check className="h-4 w-4 text-primary shrink-0" />
                         )}
                       </div>
                       {assembly.description && (
